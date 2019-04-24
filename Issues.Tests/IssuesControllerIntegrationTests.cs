@@ -48,8 +48,6 @@ namespace Issues.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
             var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
-
-
         }
 
         [Fact]
@@ -63,7 +61,6 @@ namespace Issues.Tests
 
             var responseBody = await response.Content.ReadAsStringAsync();
             var resource = JsonConvert.DeserializeObject<IssueResource>(responseBody);
-
         }
 
 

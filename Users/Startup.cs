@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
+using ScopeClaim;
 using Users.Model;
 
 [assembly:InternalsVisibleTo("Users.Tests")]
@@ -57,15 +58,13 @@ namespace Users
             
             services.AddAuthorization(options =>
             {
-                foreach (var x in new[] { "read:users" })
-                {
-                    options.AddPolicy(x, policy => policy.Requirements.Add(new HasScopeRequirement(x, authority)));
-                }
+                options.AddScopePolicies(new[] { "read:users" });
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

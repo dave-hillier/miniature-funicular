@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HalHelper\HalHelper.csproj" />
+    <ProjectReference Include="..\ScopeClaim\ScopeClaim.csproj" />
   </ItemGroup>
 
 </Project>

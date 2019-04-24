@@ -8,7 +8,8 @@ namespace Users
         string CurrentTenant { get; }
     }
 
-    class TenantAccessor : ITenantAccessor
+    // ReSharper disable once ClassNeverInstantiated.Global
+    internal class TenantAccessor : ITenantAccessor
     {
         private readonly IHttpContextAccessor _accessor;
 

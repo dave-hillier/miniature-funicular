@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ScopeClaim;
 using Tasks.Model;
 
 namespace Tasks
@@ -55,11 +56,7 @@ namespace Tasks
 
             services.AddAuthorization(options =>
             {
-                foreach (var scope in new[] { "read:tasks", "write:tasks" })
-                {
-                    options.AddPolicy(scope, policy => 
-                        policy.Requirements.Add(new HasScopeRequirement(scope, authority)));
-                }
+                options.AddScopePolicies(new[] {"read:tasks", "write:tasks"});
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>

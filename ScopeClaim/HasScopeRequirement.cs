@@ -1,17 +1,15 @@
 using System;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Tasks
+namespace ScopeClaim
 {
     public class HasScopeRequirement : IAuthorizationRequirement
     {
-        public string Issuer { get; }
         public string Scope { get; }
 
-        public HasScopeRequirement(string scope, string issuer)
+        public HasScopeRequirement(string scope)
         {
             Scope = scope ?? throw new ArgumentNullException(nameof(scope));
-            Issuer = issuer ?? throw new ArgumentNullException(nameof(issuer));
         }
     }
 }

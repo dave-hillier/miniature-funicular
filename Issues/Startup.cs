@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Issues.Model;
+using ScopeClaim;
 
 namespace Issues
 {
@@ -55,11 +56,7 @@ namespace Issues
 
             services.AddAuthorization(options =>
             {
-                foreach (var scope in new[] { "read:issues", "write:issues" })
-                {
-                    options.AddPolicy(scope, policy => 
-                        policy.Requirements.Add(new HasScopeRequirement(scope, authority)));
-                }
+                options.AddScopePolicies(new[] { "read:issues", "write:issues" });                
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
