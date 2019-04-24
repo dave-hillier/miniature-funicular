@@ -15,5 +15,24 @@ namespace Issues.Model
         [Required]
         [MaxLength(20)]
         public string Tenant { get; set; }
+        
+        public string Title { get; set; }
+
+        public DateTime Updated { get; set; }
+
+        public DateTime Created { get; set; }
+
+        public string Description { get; set; }
+
+        public string Category { get; set; }
+
+        public DateTime? Resolved { get; set; }
+
+        public string Location { get; set; } 
+        
+        public string Status { get; set; }
+        
+        // TODO: images
+        // TODO: assignee
     }
 }

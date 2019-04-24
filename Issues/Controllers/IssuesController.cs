@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using HalHelper;
+using Issues.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Issues.Resources;
+using Microsoft.EntityFrameworkCore;
 
 namespace Issues.Controllers
 {
@@ -9,18 +14,47 @@ namespace Issues.Controllers
     [ApiController]
     public class IssuesController : ControllerBase
     {
+        private readonly ApplicationDbContext _applicationDbContext;
+
+        public IssuesController(ApplicationDbContext applicationDbContext)
+        {
+            _applicationDbContext = applicationDbContext;
+        }
         [Authorize("read:issues")]
         [HttpGet]
-        public ActionResult<HalResourceBase> Issue()
+        public async Task<ActionResult<ResourceBase>> GetAllIssues()
         {
-            return null;
+            
+            var issues = await _applicationDbContext.Issues.ToListAsync();
+            
+            return new ResourceBase("/api/issues").AddEmbedded("data", issues.Select(CreateIssue).ToList());
+        }
+
+        private static ResourceBase CreateIssue(Issue issue)
+        {
+            var resource = new IssueResource($"/api/issues/{issue.Id}")
+            {
+                Title = issue.Title,
+                Status = issue.Status,
+                Updated = issue.Updated,
+                Created = issue.Created,
+                Location = issue.Location,
+                Category = issue.Category,
+                Description = issue.Description,
+                Resolved = issue.Resolved
+            };
+            // TODO: image, assignee
+            return resource;
         }
 
         [Authorize("read:issues")]
         [HttpGet("{id}")]
-        public ActionResult<IssueResource> Get(int id)
+        public async Task<ActionResult<ResourceBase>> Get(string id)
         {
-            return null;
+            var issues = await _applicationDbContext.Issues.FindAsync(id);
+            if (issues == null)
+                return NotFound();
+            return Ok(CreateIssue(issues));
         }
 
         [Authorize("write:issues")]
@@ -29,31 +63,32 @@ namespace Issues.Controllers
         {
 
         }
-
+        
+        /*
         [Authorize("write:issues")]
         [HttpPost("{id}")]
-        public void AppendTask(int id, [FromBody] IssueResource title)
+        public void AppendTask(string id, [FromBody] IssueResource title)
         {
 
-        }
+        }*/
 
         [Authorize("write:issues")]
         [HttpPut("{id}")]
-        public ActionResult Update(int id, [FromBody]IssueResource resource)
+        public ActionResult Update(string id, [FromBody]IssueResource resource)
         {
             return null;
         }
 
         [Authorize("write:issues")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<IssueResource> resource)
+        public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<IssueResource> resource)
         {
             return null;
         }
 
         [Authorize("write:issues")]
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public ActionResult Delete(string id)
         {
             return null;
         }

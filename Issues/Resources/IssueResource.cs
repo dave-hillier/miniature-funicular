@@ -4,18 +4,6 @@ using HalHelper;
 namespace Issues.Resources
 {
 
-    public class PhotoResource : HalResourceBase
-    {
-
-    }
-
-    public class AssigneeResource : ResourceBase
-    {
-
-    }
-
-
-
     public class IssueResource : ResourceBase
     {
         public string Title { get; set; }
@@ -28,9 +16,16 @@ namespace Issues.Resources
 
         public string Category { get; set; }
 
-        public DateTime? ResolvedAt { get; set; }
+        public DateTime? Resolved { get; set; }
 
-        // TODO: location, assignee
-
+        public string Location { get; set; } // URL
+        
+        public string Status { get; set; }
+        
+        // TODO: location, assignee, images
+ 
+        public IssueResource(string selfLink) : base(selfLink)
+        {
+        }
     }
 }
