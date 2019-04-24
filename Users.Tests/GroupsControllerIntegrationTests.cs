@@ -35,12 +35,12 @@ namespace Users.Tests
 
         private void Seed(ApplicationDbContext context)
         {
-            context.Users.Add(new User { Username = "User1", Id = _id1 });
-            context.Users.Add(new User { Username = "User2", Id = _id2 });
+            context.Users.Add(new User { Username = "User1", Id = _id1, Tenant = "Tenant" });
+            context.Users.Add(new User { Username = "User2", Id = _id2, Tenant = "Tenant" });
 
-            context.Groups.Add(new Group {DisplayName = "Admin", Id = _id3}); 
-            context.Groups.Add(new Group {DisplayName = "Group1"}); 
-            context.Groups.Add(new Group {DisplayName = "Group2"}); 
+            context.Groups.Add(new Group {DisplayName = "Admin", Id = _id3, Tenant = "Tenant"}); 
+            context.Groups.Add(new Group {DisplayName = "Group1", Tenant = "Tenant"}); 
+            context.Groups.Add(new Group {DisplayName = "Group2", Tenant = "Tenant"}); 
             
             context.SaveChanges();
         }
@@ -61,7 +61,6 @@ namespace Users.Tests
             Assert.Contains("Admin", responseBody);
             Assert.Contains("Group1", responseBody);
             Assert.Contains("Group2", responseBody);
-
         }
         
         [Fact]
@@ -86,8 +85,7 @@ namespace Users.Tests
 
             var response = await _testClient.SendAsync(request);
             
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-           
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);           
         }
         // TODO: multi-tenancy
     }

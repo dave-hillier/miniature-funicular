@@ -23,7 +23,7 @@ namespace Users.Tests
             {
                 {"sub", "12345"},
                 {"iss", "https://authority"},
-                {"https://guestline.app/claims/tenant", "Tenant"},
+                {"https://auth.guestline.app/claims/tenant", "Tenant"},
                 {"aud", "https://audience"},
                 {"iat", (DateTime.UtcNow - epoch).TotalSeconds},
                 {"exp", (DateTime.UtcNow.AddMinutes(1) - epoch).TotalSeconds},

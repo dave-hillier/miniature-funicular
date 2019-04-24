@@ -15,8 +15,8 @@ namespace Users.Tests
     public class UsersControllerIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private readonly string _id1 = Guid.NewGuid().ToString();
-        private readonly string _id2 = Guid.NewGuid().ToString();
+        private readonly string _id1 = "1";
+        private readonly string _id2 = "2";
         
         public UsersControllerIntegrationTests()
         {
@@ -34,8 +34,9 @@ namespace Users.Tests
 
         private void Seed(ApplicationDbContext context)
         {
-            context.Users.Add(new User { Username = "User1", Id = _id1 });
-            context.Users.Add(new User { Username = "User2", Id = _id2 });
+            context.Users.Add(new User { Username = "User1", Id = _id1, Tenant = "Tenant" });
+            context.Users.Add(new User { Username = "User2", Id = _id2, Tenant = "Tenant" });
+            context.Users.Add(new User { Username = "User1", Tenant = "OtherTenant" });
             context.SaveChanges();
         }
 

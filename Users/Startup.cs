@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using Users.Model;
 
@@ -14,8 +15,6 @@ using Users.Model;
 
 namespace Users
 {
-
-
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -36,7 +35,9 @@ namespace Users
               .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddHealthChecks();
+            services.AddHttpContextAccessor();
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+            services.TryAddScoped<ITenantAccessor, TenantAccessor>();
 
             var audience = Configuration["Authentication:Audience"];
             var authority = Configuration["Authentication:Authority"];

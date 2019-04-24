@@ -6,6 +6,7 @@ namespace Users.Model
 {
     public class User
     {
+        // Not on end user model
         public string Id { get; set; }
      
         [Required]
@@ -15,5 +16,10 @@ namespace Users.Model
         
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime LastUpdated { get; set; }
+        
+        // Not on end user model - usually equivalent to group, sometimes site
+        [Required]
+        [MaxLength(20)]
+        public string Tenant { get; set; } 
     }
 }

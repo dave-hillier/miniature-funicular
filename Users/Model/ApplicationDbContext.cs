@@ -1,25 +1,30 @@
+using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Users.Model
 {
     public class ApplicationDbContext : DbContext
     {
+        private readonly ITenantAccessor _accessor;
         public DbSet<User> Users { get; set; }
         
         public DbSet<Group> Groups { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ITenantAccessor accessor) : base(options)
         {
+            _accessor = accessor;
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // TODO: query filter
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // TODO: 
+            modelBuilder.Entity<User>().HasQueryFilter(b =>  b.Tenant == _accessor.CurrentTenant);
+            modelBuilder.Entity<Group>().HasQueryFilter(b =>  b.Tenant == _accessor.CurrentTenant);
         }
 
     }

@@ -1,5 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +15,11 @@ namespace Users.Tests
 {
     internal static class IntegrationExtensions
     {
-        public static void ConfigureInMemoryDatabases(this IServiceCollection services, InMemoryDatabaseRoot memoryDatabaseRoot)
+        public static void ConfigureInMemoryDatabases(this IServiceCollection services,
+            InMemoryDatabaseRoot memoryDatabaseRoot)
         {
-            services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("Application", memoryDatabaseRoot));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase("Application", memoryDatabaseRoot));
         }
 
         public static void ConfigureUnvalidatedAuth(this IServiceCollection services)
@@ -36,9 +40,14 @@ namespace Users.Tests
                 };
                 options.RequireHttpsMetadata = false;
                 options.Authority = null;
+                options.BackchannelHttpHandler = new ContextHandler();
             });
         }
-        
+
+        private class ContextHandler : DelegatingHandler
+        {
+        }
+
         public static IWebHostBuilder ConfigureTest(this IWebHostBuilder builder)
         {
             var inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
@@ -49,6 +58,7 @@ namespace Users.Tests
                 {
                     services.ConfigureInMemoryDatabases(inMemoryDatabaseRoot);
                     services.ConfigureUnvalidatedAuth();
+                    services.AddScoped<ITenantAccessor, FakeTenantAccessor>();
                 })
                 .ConfigureLogging(logging =>
                 {
@@ -57,5 +67,10 @@ namespace Users.Tests
                 })
                 .UseStartup<Startup>();
         }
+    }
+
+    internal class FakeTenantAccessor : ITenantAccessor
+    {
+        public string CurrentTenant => "Tenant";
     }
 }

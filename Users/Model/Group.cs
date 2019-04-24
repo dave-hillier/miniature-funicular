@@ -15,5 +15,10 @@ namespace Users.Model
         
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime LastUpdated { get; set; }
+        
+        // Not on end user model - usually group, sometimes site
+        [Required]
+        [MaxLength(20)]
+        public string Tenant { get; set; }
     }
 }
