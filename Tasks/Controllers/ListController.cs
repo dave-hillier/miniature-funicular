@@ -1,3 +1,4 @@
+using HalHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -11,14 +12,14 @@ namespace Tasks.Controllers
     {
         [Authorize("read:tasks")]
         [HttpGet]
-        public ActionResult<HalResourceBase> List()
+        public ActionResult<ResourceBase> List()
         {
             return null;
         }
 
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
-        public ActionResult<ListResource> Get(int id)
+        public ActionResult<TaskListResource> Get(int id)
         {
             return null;
         }
@@ -30,7 +31,7 @@ namespace Tasks.Controllers
 
         }
 
-        [Authorize("write:lists")]
+        [Authorize("write:tasks")]
         [HttpPost("{id}")]
         public void AppendTask(int id, [FromBody] TaskResource title)
         {
@@ -39,14 +40,14 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
-        public ActionResult Update(int id, [FromBody]ListResource resource)
+        public ActionResult Update(int id, [FromBody]TaskListResource resource)
         {
             return null;
         }
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<ListResource> resource)
+        public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<TaskListResource> resource)
         {
             return null;
         }

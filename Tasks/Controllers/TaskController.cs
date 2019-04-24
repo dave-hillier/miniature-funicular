@@ -32,7 +32,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<TaskResource> resource) 
+        public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<TaskResource> resource)
         {
             return null;
         }

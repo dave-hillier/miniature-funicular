@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Tasks.Model;
 
 namespace Tasks
 {
@@ -14,7 +20,7 @@ namespace Tasks
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -25,7 +31,39 @@ namespace Tasks
                   options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
               })
               .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddHealthChecks();
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+            services.TryAddScoped<ITenantAccessor, TenantAccessor>();
+
+            var audience = Configuration["Authentication:Audience"];
+            var authority = Configuration["Authentication:Authority"];
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = authority;
+                    options.Audience = audience;
+                    options.SaveToken = true;
+                });
+
+            services.AddAuthorization(options =>
+            {
+                foreach (var scope in new[] { "read:tasks", "write:tasks" })
+                {
+                    options.AddPolicy(scope, policy => 
+                        policy.Requirements.Add(new HasScopeRequirement(scope, authority)));
+                }
+            });
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Default")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,8 +78,9 @@ namespace Tasks
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHealthChecks("/health");
+            app.UseHealthChecks("/status/health");
 
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
         }

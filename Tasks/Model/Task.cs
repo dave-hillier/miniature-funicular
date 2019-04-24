@@ -2,9 +2,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Users.Model
+namespace Tasks.Model
 {
-    public class Group
+    public class Task
     {
         public string Id { get; set; }
                 
@@ -15,11 +15,5 @@ namespace Users.Model
         [Required]
         [MaxLength(20)]
         public string Tenant { get; set; }
-        
-        [Required]
-        [MinLength(3)]
-        [MaxLength(255)]
-        public string DisplayName { get; set; }
-
     }
 }

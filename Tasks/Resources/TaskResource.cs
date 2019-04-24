@@ -1,9 +1,14 @@
 using System;
+using HalHelper;
 
 namespace Tasks.Resources
 {
-    public class TaskResource : HalResourceBase
+    public class TaskResource : ResourceBase
     {
+        public TaskResource(string selfLink) : base(selfLink)
+        {
+        }
+
         public string Title { get; set; }
 
         public DateTime Updated { get; set; }

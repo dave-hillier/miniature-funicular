@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
-namespace Users.Tests
+namespace Tasks.Tests
 {
     internal static class HttpClientHelper
     {

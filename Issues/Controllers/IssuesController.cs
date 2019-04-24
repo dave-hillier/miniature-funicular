@@ -9,49 +9,49 @@ namespace Issues.Controllers
     [ApiController]
     public class IssuesController : ControllerBase
     {
-        [Authorize("read:tasks")]
+        [Authorize("read:issues")]
         [HttpGet]
         public ActionResult<HalResourceBase> Issue()
         {
             return null;
         }
 
-        [Authorize("read:tasks")]
+        [Authorize("read:issues")]
         [HttpGet("{id}")]
         public ActionResult<IssueResource> Get(int id)
         {
             return null;
         }
 
-        [Authorize("write:tasks")]
+        [Authorize("write:issues")]
         [HttpPost]
         public void Create([FromBody] string title)
         {
 
         }
 
-        [Authorize("write:Issues")]
+        [Authorize("write:issues")]
         [HttpPost("{id}")]
         public void AppendTask(int id, [FromBody] IssueResource title)
         {
 
         }
 
-        [Authorize("write:tasks")]
+        [Authorize("write:issues")]
         [HttpPut("{id}")]
         public ActionResult Update(int id, [FromBody]IssueResource resource)
         {
             return null;
         }
 
-        [Authorize("write:tasks")]
+        [Authorize("write:issues")]
         [HttpPatch("{id}")]
         public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<IssueResource> resource)
         {
             return null;
         }
 
-        [Authorize("write:tasks")]
+        [Authorize("write:issues")]
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
