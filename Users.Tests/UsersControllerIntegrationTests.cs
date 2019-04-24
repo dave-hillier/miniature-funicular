@@ -38,7 +38,6 @@ namespace Users.Tests
             var group = new Group {DisplayName = "Admin", Id = "G", Tenant = "Tenant"};
             context.Groups.Add(group);
             
-            
             var user = new User
             {
                 Username = "Username", Id = Id1, Tenant = "Tenant",
@@ -95,6 +94,7 @@ namespace Users.Tests
             var resource = JsonConvert.DeserializeObject<UserResource>(responseBody);
 
             Assert.Equal("Username", resource.DisplayName);
+            Assert.Contains("Admin", responseBody);
         }
 
 

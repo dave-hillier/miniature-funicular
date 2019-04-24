@@ -5,7 +5,7 @@ namespace Tasks
 {
     public interface ITenantAccessor
     {
-        string CurrentTenant { get; }
+        string Current { get; }
     }
 
     class TenantAccessor : ITenantAccessor
@@ -17,7 +17,7 @@ namespace Tasks
             _accessor = accessor;
         }
 
-        public string CurrentTenant
+        public string Current
         {
             get
             {

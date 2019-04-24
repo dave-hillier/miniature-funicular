@@ -1,4 +1,5 @@
 ﻿using System;
+using HalHelper;
 
 namespace Issues.Resources
 {
@@ -8,14 +9,14 @@ namespace Issues.Resources
 
     }
 
-    public class AssigneeResource : HalResourceBase
+    public class AssigneeResource : ResourceBase
     {
 
     }
 
 
 
-    public class IssueResource : HalResourceBase
+    public class IssueResource : ResourceBase
     {
         public string Title { get; set; }
 

@@ -15,9 +15,6 @@ namespace Tasks.Tests
     public class ListsControllerIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private readonly string _id1 = Guid.NewGuid().ToString();
-        private readonly string _id2 = Guid.NewGuid().ToString();
-        private readonly string _id3 = Guid.NewGuid().ToString();
 
         public ListsControllerIntegrationTests()
         {
@@ -35,11 +32,38 @@ namespace Tasks.Tests
 
         private void Seed(ApplicationDbContext context)
         {
+            var list = new TaskList
+            {
+                Tenant = "Tenant", 
+                Title = "List",
+                Id = "List1"
+            };            
+            context.List.Add(list);
+            
+            var task1 = new TaskModel
+            {
+                Id = "Task1",
+                Tenant = "Tenant", 
+                Title = "Title1",
+                ParentTaskList = list
+            };
+            context.Tasks.Add(task1);
+            
+            var task2 = new TaskModel
+            {
+                Id = "Task2",
+                Tenant = "Tenant", 
+                Title = "Title2",
+                Completed = DateTime.Today,
+                Parent = task1
+            };
+            context.Tasks.Add(task2);
+            
             context.SaveChanges();
         }
 
         [Fact]
-        public async void GetGroupsList()
+        public async void GetAllLists()
         {
             var request = HttpClientHelper.CreateJsonRequest("/api/lists", HttpMethod.Get, null);
 
@@ -49,17 +73,13 @@ namespace Tasks.Tests
             var responseBody = await response.Content.ReadAsStringAsync();
             var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
 
-            Assert.Equal(3, resource.Embedded["data"].Count);
-
-            Assert.Contains("Admin", responseBody);
-            Assert.Contains("Group1", responseBody);
-            Assert.Contains("Group2", responseBody);
+            
         }
 
         [Fact]
-        public async void GetGroup()
+        public async void GetList()
         {
-            var request = HttpClientHelper.CreateJsonRequest($"/api/lists/{_id3}", HttpMethod.Get, null);
+            var request = HttpClientHelper.CreateJsonRequest("/api/lists/List1", HttpMethod.Get, null);
 
             var response = await _testClient.SendAsync(request);
 
@@ -70,7 +90,7 @@ namespace Tasks.Tests
         }
 
         [Fact]
-        public async void GetNotFound()
+        public async void GetNotFoundList()
         {
             var request = HttpClientHelper.CreateJsonRequest($"/api/lists/notFound", HttpMethod.Get, null);
 

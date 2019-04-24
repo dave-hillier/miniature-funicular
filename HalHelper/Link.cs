@@ -1,7 +1,7 @@
 
 namespace HalHelper
 {
-    public class LinkResource
+    public class Link
     {
         public string Href { get; set; }
 

@@ -29,7 +29,7 @@ namespace Users.Controllers
             var list = await groupResources.ToListAsync();
             var resourceCollection = new ResourceBase("/api/groups")
                 .AddEmbedded("data", list);
-            return new OkObjectResult(resourceCollection);
+            return Ok(resourceCollection);
         }
 
         [Authorize("read:users")]

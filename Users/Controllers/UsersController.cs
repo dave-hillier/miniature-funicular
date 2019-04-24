@@ -35,7 +35,7 @@ namespace Users.Controllers
                 .AddEmbedded("data", userResources)
                 .AddLink("current", "/api/users/@me"); 
             
-            return new OkObjectResult(response);
+            return Ok(response);
         }
 
         [Authorize("read:users")]

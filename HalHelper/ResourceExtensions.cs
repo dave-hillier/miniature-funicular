@@ -7,7 +7,7 @@ namespace HalHelper
     {
         public static T AddLink<T>(this T resource, string name, string uri) where T : ResourceBase
         {
-            resource.Links.Add(name, new LinkResource { Href = uri });
+            resource.Links.Add(name, new Link { Href = uri });
             return resource;
         }
 

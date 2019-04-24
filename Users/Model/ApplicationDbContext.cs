@@ -32,6 +32,7 @@ namespace Users.Model
 
         }
 
+        // TODO: consider https://docs.microsoft.com/en-us/ef/core/querying/related-data#lazy-loading
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasQueryFilter(b =>  b.Tenant == _accessor.Current);

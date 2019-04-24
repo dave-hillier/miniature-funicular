@@ -1,27 +1,56 @@
+using System.Collections.Generic;
+using System.Linq;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Tasks.Model;
 using Tasks.Resources;
 
 namespace Tasks.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class ListsController : ControllerBase
     {
+        private readonly ApplicationDbContext _applicationDbContext;
+
+        public ListsController(ApplicationDbContext applicationDbContext)
+        {
+            _applicationDbContext = applicationDbContext;
+        }
+        
         [Authorize("read:tasks")]
         [HttpGet]
         public ActionResult<ResourceBase> List()
         {
-            return null;
+            var lists = GetLists()
+                .Select(ResourceFactory.CreateTaskList);
+            var resourceBase = new ResourceBase("/api/lists")
+                .AddEmbedded("data", lists.ToList());
+            return Ok(resourceBase);
         }
+
+        private IIncludableQueryable<TaskList, List<TaskModel>> GetLists()
+        {
+            return _applicationDbContext.List
+                .Include(l => l.Tasks)
+                .ThenInclude(t => t.Children);
+        }
+
 
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
-        public ActionResult<TaskListResource> Get(int id)
+        public ActionResult<TaskListResource> Get(string id)
         {
-            return null;
+            var list = GetLists().FirstOrDefault(l => l.Id == id);
+            if (list == null)
+                return NotFound();
+            
+            return Ok(ResourceFactory.CreateTaskList(list));
         }
 
         [Authorize("write:tasks")]

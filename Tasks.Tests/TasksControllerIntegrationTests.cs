@@ -15,8 +15,6 @@ namespace Tasks.Tests
     public class TasksControllerIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private const string Id1 = "1";
-        private const string Id2 = "2";
 
         public TasksControllerIntegrationTests()
         {
@@ -34,33 +32,37 @@ namespace Tasks.Tests
 
         private void Seed(ApplicationDbContext context)
         {
+            var list = new TaskList
+            {
+                Tenant = "Tenant", 
+                Title = "List",
+                Id = "List1"
+            };            
+            context.List.Add(list);
+            
+            var task1 = new TaskModel
+            {
+                Id = "Task1",
+                Tenant = "Tenant", 
+                ParentTaskList = list
+            };
+            context.Tasks.Add(task1);
+            
+            var task2 = new TaskModel
+            {
+                Id = "Task2",
+                Tenant = "Tenant", 
+                Parent = task1
+            };
+            context.Tasks.Add(task2);
+            
             context.SaveChanges();
-        }
-
-        [Fact]
-        public async void GetTaskList()
-        {
-            var request = HttpClientHelper.CreateJsonRequest("/api/tasks", HttpMethod.Get, null);
-
-            var response = await _testClient.SendAsync(request);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
-
-            Assert.Equal(2, resource.Embedded["data"].Count);
-
-            Assert.Contains("Task1", responseBody);
-            Assert.Contains("Task2", responseBody);
-
-            Assert.Contains($"/api/Tasks/{Id1}", responseBody);
-            Assert.Contains($"/api/Tasks/{Id2}", responseBody);
         }
 
         [Fact]
         public async void GetTask()
         {
-            var request = HttpClientHelper.CreateJsonRequest($"/api/tasks/{Id1}", HttpMethod.Get, null);
+            var request = HttpClientHelper.CreateJsonRequest("/api/tasks/Task1", HttpMethod.Get, null);
 
             var response = await _testClient.SendAsync(request);
 

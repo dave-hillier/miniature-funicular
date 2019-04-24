@@ -6,14 +6,14 @@ namespace Tasks.Model
 {
     public class ApplicationDbContext : DbContext
     {
-        private readonly ITenantAccessor _accessor;
-        public DbSet<List> List { get; set; }
+        private readonly ITenantAccessor _tenantAccessor;
+        public DbSet<TaskList> List { get; set; }
 
-        public DbSet<Task> Tasks { get; set; }
+        public DbSet<TaskModel> Tasks { get; set; }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ITenantAccessor accessor) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ITenantAccessor tenantAccessor) : base(options)
         {
-            _accessor = accessor;
+            _tenantAccessor = tenantAccessor;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -23,8 +23,10 @@ namespace Tasks.Model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Task>().HasQueryFilter(b => b.Tenant == _accessor.CurrentTenant);
-            modelBuilder.Entity<List>().HasQueryFilter(b => b.Tenant == _accessor.CurrentTenant);
+            modelBuilder.Entity<TaskModel>().HasQueryFilter(b => b.Tenant == _tenantAccessor.Current);
+            modelBuilder.Entity<TaskList>().HasQueryFilter(b => b.Tenant == _tenantAccessor.Current);
+            
+            
         }
 
     }
