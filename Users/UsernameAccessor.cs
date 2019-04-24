@@ -3,17 +3,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Users
 {
-    public interface ITenantAccessor
+    public interface IUsernameAccessor
     {
         string Current { get; }
     }
-
     // ReSharper disable once ClassNeverInstantiated.Global
-    internal class TenantAccessor : ITenantAccessor
+    internal class UsernameAccessor : IUsernameAccessor
     {
         private readonly IHttpContextAccessor _accessor;
 
-        public TenantAccessor(IHttpContextAccessor accessor)
+        public UsernameAccessor(IHttpContextAccessor accessor)
         {
             _accessor = accessor;
         }
@@ -23,10 +22,8 @@ namespace Users
             get
             {
                 var context = _accessor.HttpContext;
-                return context.User.Claims.Single(c => c.Type == "https://auth.guestline.app/claims/tenant").Value;
+                return context.User.Claims.Single(c => c.Type == "https://auth.guestline.app/claims/username").Value;
             }
         }
     }
-
-
 }

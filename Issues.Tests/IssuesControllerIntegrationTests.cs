@@ -15,8 +15,8 @@ namespace Issues.Tests
     public class IssuesControllerIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private readonly string _id1 = "1";
-        private readonly string _id2 = "2";
+        private const string Id1 = "1";
+        private const string Id2 = "2";
 
         public IssuesControllerIntegrationTests()
         {
@@ -53,7 +53,7 @@ namespace Issues.Tests
         [Fact]
         public async void GetIssue()
         {
-            var request = HttpClientHelper.CreateJsonRequest($"/api/Issues/{_id1}", HttpMethod.Get, null);
+            var request = HttpClientHelper.CreateJsonRequest($"/api/Issues/{Id1}", HttpMethod.Get, null);
 
             var response = await _testClient.SendAsync(request);
 

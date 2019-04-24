@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,5 +22,7 @@ namespace Users.Model
         [Required]
         [MaxLength(20)]
         public string Tenant { get; set; } 
+              
+        public List<UserGroup> UserGroups { get; set; } = new List<UserGroup>();
     }
 }

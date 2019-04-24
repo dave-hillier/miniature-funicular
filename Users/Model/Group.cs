@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,6 +21,9 @@ namespace Users.Model
         [MinLength(3)]
         [MaxLength(255)]
         public string DisplayName { get; set; }
+        
+        
+        public List<UserGroup> UserGroups { get; set; }
 
     }
 }

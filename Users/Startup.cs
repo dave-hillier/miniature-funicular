@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using ScopeClaim;
 using Users.Model;
 
-[assembly:InternalsVisibleTo("Users.Tests")]
+[assembly: InternalsVisibleTo("Users.Tests")]
 
 namespace Users
 {
@@ -34,15 +34,16 @@ namespace Users
                   options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
               })
               .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
+
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
             services.TryAddScoped<ITenantAccessor, TenantAccessor>();
+            services.TryAddScoped<IUsernameAccessor, UsernameAccessor>();
 
             var audience = Configuration["Authentication:Audience"];
             var authority = Configuration["Authentication:Authority"];
-            
+
             services
                 .AddAuthentication(options =>
                 {
@@ -53,9 +54,9 @@ namespace Users
                 {
                     options.Authority = authority;
                     options.Audience = audience;
-                    options.SaveToken = true; 
+                    options.SaveToken = true;
                 });
-            
+
             services.AddAuthorization(options =>
             {
                 options.AddScopePolicies(new[] { "read:users" });
@@ -64,7 +65,6 @@ namespace Users
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
         }
-
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

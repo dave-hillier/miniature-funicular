@@ -57,8 +57,7 @@ namespace Users.Tests
                 .ConfigureServices(services =>
                 {
                     services.ConfigureInMemoryDatabases(inMemoryDatabaseRoot);
-                    services.ConfigureUnvalidatedAuth();
-                    services.AddScoped<ITenantAccessor, FakeTenantAccessor>();
+                    services.ConfigureUnvalidatedAuth();                   
                 })
                 .ConfigureLogging(logging =>
                 {
@@ -67,10 +66,5 @@ namespace Users.Tests
                 })
                 .UseStartup<Startup>();
         }
-    }
-
-    internal class FakeTenantAccessor : ITenantAccessor
-    {
-        public string CurrentTenant => "Tenant";
     }
 }

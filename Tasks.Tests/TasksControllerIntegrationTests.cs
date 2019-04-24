@@ -15,8 +15,8 @@ namespace Tasks.Tests
     public class TasksControllerIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private readonly string _id1 = "1";
-        private readonly string _id2 = "2";
+        private const string Id1 = "1";
+        private const string Id2 = "2";
 
         public TasksControllerIntegrationTests()
         {
@@ -53,14 +53,14 @@ namespace Tasks.Tests
             Assert.Contains("Task1", responseBody);
             Assert.Contains("Task2", responseBody);
 
-            Assert.Contains($"/api/Tasks/{_id1}", responseBody);
-            Assert.Contains($"/api/Tasks/{_id2}", responseBody);
+            Assert.Contains($"/api/Tasks/{Id1}", responseBody);
+            Assert.Contains($"/api/Tasks/{Id2}", responseBody);
         }
 
         [Fact]
         public async void GetTask()
         {
-            var request = HttpClientHelper.CreateJsonRequest($"/api/tasks/{_id1}", HttpMethod.Get, null);
+            var request = HttpClientHelper.CreateJsonRequest($"/api/tasks/{Id1}", HttpMethod.Get, null);
 
             var response = await _testClient.SendAsync(request);
 

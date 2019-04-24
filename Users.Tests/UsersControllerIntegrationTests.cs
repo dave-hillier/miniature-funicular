@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using HalHelper;
@@ -15,9 +16,9 @@ namespace Users.Tests
     public class UsersControllerIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private readonly string _id1 = "1";
-        private readonly string _id2 = "2";
-        
+        private const string Id1 = "1";
+        private const string Id2 = "2";
+
         public UsersControllerIntegrationTests()
         {
             var builder = new WebHostBuilder().ConfigureTest();
@@ -34,9 +35,30 @@ namespace Users.Tests
 
         private void Seed(ApplicationDbContext context)
         {
-            context.Users.Add(new User { Username = "User1", Id = _id1, Tenant = "Tenant" });
-            context.Users.Add(new User { Username = "User2", Id = _id2, Tenant = "Tenant" });
+            var group = new Group {DisplayName = "Admin", Id = "G", Tenant = "Tenant"};
+            context.Groups.Add(group);
+            
+            
+            var user = new User
+            {
+                Username = "Username", Id = Id1, Tenant = "Tenant",
+            };
+            var userGroup = new UserGroup
+            {
+                GroupId = group.Id,
+                Group = group, 
+                UserId = user.Id,
+                User = user                    
+            };
+            user.UserGroups = new List<UserGroup> { userGroup };
+            context.Users.Add(user);
+            
+            context.Users.Add(new User { Username = "User2", Id = Id2, Tenant = "Tenant" });
+            
             context.Users.Add(new User { Username = "User1", Tenant = "OtherTenant" });
+
+            context.UserGroups.Add(userGroup);
+            
             context.SaveChanges();
         }
 
@@ -53,38 +75,50 @@ namespace Users.Tests
 
             Assert.Equal(2, resource.Embedded["data"].Count);
 
-            Assert.Contains("User1", responseBody);
+            Assert.Contains("Username", responseBody);
             Assert.Contains("User2", responseBody);
-            
-            Assert.Contains($"/api/users/{_id1}", responseBody);
-            Assert.Contains($"/api/users/{_id2}", responseBody);
+
+            Assert.Contains($"/api/users/{Id1}", responseBody);
+            Assert.Contains($"/api/users/{Id2}", responseBody);
         }
 
         [Fact]
         public async void GetUser()
         {
-            var request = HttpClientHelper.CreateJsonRequest($"/api/users/{_id1}", HttpMethod.Get, null);
+            var request = HttpClientHelper.CreateJsonRequest($"/api/users/{Id1}", HttpMethod.Get, null);
 
             var response = await _testClient.SendAsync(request);
-            
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
             var responseBody = await response.Content.ReadAsStringAsync();
             var resource = JsonConvert.DeserializeObject<UserResource>(responseBody);
-            
-            Assert.Equal("User1", resource.DisplayName);
+
+            Assert.Equal("Username", resource.DisplayName);
         }
-        
-        
+
+
         [Fact]
         public async void GetNotFound()
         {
             var request = HttpClientHelper.CreateJsonRequest($"/api/users/notFound", HttpMethod.Get, null);
 
             var response = await _testClient.SendAsync(request);
-            
+
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-           
+
+        }
+
+        [Fact]
+        public async void GetMe()
+        {
+            var request = HttpClientHelper.CreateJsonRequest($"/api/users/@me", HttpMethod.Get, null);
+
+            var response = await _testClient.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+            Assert.Equal("/api/users/1", response.Headers.Location.ToString());
+            
         }
     }
 }
