@@ -10,7 +10,7 @@ namespace ScopeClaim
             policy.Requirements.Add(new HasScopeRequirement(scope));
         }
         
-        public static void AddScopePolicies(this AuthorizationOptions options, IEnumerable<string> scopes)
+        public static void AddScopePolicies(this AuthorizationOptions options, params string[] scopes)
         {
             foreach (var scope in scopes)
             {

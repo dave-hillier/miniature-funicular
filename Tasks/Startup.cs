@@ -56,7 +56,7 @@ namespace Tasks
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies(new[] {"read:tasks", "write:tasks"});
+                options.AddScopePolicies("read:tasks", "write:tasks");
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>

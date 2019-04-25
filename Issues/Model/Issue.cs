@@ -28,11 +28,12 @@ namespace Issues.Model
 
         public DateTime? Resolved { get; set; }
 
-        public string Location { get; set; } 
+        public string Location { get; set; } // TODO: locations
         
         public string Status { get; set; }
         
         // TODO: images
         // TODO: assignee
+        // TODO: action - deduct from stock etc
     }
 }

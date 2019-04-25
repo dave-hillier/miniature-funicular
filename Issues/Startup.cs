@@ -56,7 +56,7 @@ namespace Issues
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies(new[] { "read:issues", "write:issues" });                
+                options.AddScopePolicies( "read:issues", "write:issues");                
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>

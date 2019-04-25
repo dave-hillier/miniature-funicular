@@ -76,7 +76,6 @@ namespace Issues.Tests
             var response = await _testClient.SendAsync(request);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         }
         
         [Fact]

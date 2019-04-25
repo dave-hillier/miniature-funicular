@@ -59,7 +59,7 @@ namespace Users
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies(new[] { "read:users" });
+                options.AddScopePolicies("read:users");
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>

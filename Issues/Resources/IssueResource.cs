@@ -19,11 +19,11 @@ namespace Issues.Resources
         public DateTime? Resolved { get; set; } // TODO: to another resource
 
         public string Location { get; set; } // TODO: external resource
-        
+
         public string Status { get; set; }
-        
-        // TODO: location, assignee, images
- 
+
+        // TODO: location, assignee, images, createdby
+
         public IssueResource(string selfLink) : base(selfLink)
         {
         }
