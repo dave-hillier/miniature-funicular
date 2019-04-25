@@ -16,9 +16,9 @@ namespace Issues.Resources
 
         public string Category { get; set; }
 
-        public DateTime? Resolved { get; set; }
+        public DateTime? Resolved { get; set; } // TODO: to another resource
 
-        public string Location { get; set; } // URL
+        public string Location { get; set; } // TODO: external resource
         
         public string Status { get; set; }
         
