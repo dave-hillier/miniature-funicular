@@ -32,7 +32,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
-        public ActionResult CreateSubTask(string id, [FromBody] TaskResource title)
+        public ActionResult CreateSubTask(string id, [FromBody] TaskResource resource)
         {
             return null;
         }
@@ -53,9 +53,14 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id) // TODO: test
         {
-            return null;
+            var toRemove = await _applicationDbContext.Tasks.FindAsync(id);
+            if (toRemove == null)
+                return NotFound();
+            _applicationDbContext.Tasks.Remove(toRemove);
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
     }

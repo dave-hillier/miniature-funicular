@@ -98,5 +98,17 @@ namespace Tasks.Tests
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
+        
+        [Fact]
+        public async void DeleteList()
+        {
+            var request = HttpClientHelper.CreateJsonRequest("/api/lists/List1", HttpMethod.Delete, null);
+            var response = await _testClient.SendAsync(request);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var request2 = HttpClientHelper.CreateJsonRequest("/api/lists/List1", HttpMethod.Get, null);
+            var response2 = await _testClient.SendAsync(request2);
+            Assert.Equal(HttpStatusCode.NotFound, response2.StatusCode);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -44,9 +45,9 @@ namespace Tasks.Controllers
 
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
-        public ActionResult<TaskListResource> Get(string id)
+        public async Task<ActionResult<TaskListResource>> Get(string id)
         {
-            var list = GetLists().FirstOrDefault(l => l.Id == id);
+            var list = await GetLists().FirstOrDefaultAsync(l => l.Id == id);
             if (list == null)
                 return NotFound();
             
@@ -55,37 +56,42 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost]
-        public void Create([FromBody] string title)
+        public void CreateList([FromBody] TaskListResource resource)
         {
 
         }
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
-        public void AppendTask(int id, [FromBody] TaskResource title)
+        public void AddNewTaskToList(string id, [FromBody] TaskResource resource)
         {
 
         }
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
-        public ActionResult Update(int id, [FromBody]TaskListResource resource)
+        public ActionResult UpdateList(string id, [FromBody]TaskListResource resource)
         {
             return null;
         }
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(int id, [FromBody]JsonPatchDocument<TaskListResource> resource)
+        public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<TaskListResource> resource)
         {
             return null;
         }
 
         [Authorize("write:tasks")]
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(string id) // TODO: test
         {
-            return null;
+            var toRemove = await _applicationDbContext.List.FindAsync(id); 
+            if (toRemove == null)
+                return NotFound();
+            _applicationDbContext.List.Remove(toRemove);
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
     }

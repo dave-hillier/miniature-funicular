@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Users.Resources;
 using HalHelper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using Users.Model;
 
 namespace Users.Controllers
@@ -26,10 +25,10 @@ namespace Users.Controllers
 
         [Authorize("read:users")]
         [HttpGet]
-        public ActionResult<ResourceBase> ListForTenant()
+        public async Task<ActionResult<ResourceBase>> ListForTenant()
         {
-            var users = UsersIncludingGroups().Select(u => CreateUser(u));
-            var userResources = users.ToArray<ResourceBase>();
+            var users = Users.Select(u => CreateUser(u));
+            var userResources = await users.ToListAsync();
             
             var response = new ResourceBase("/api/users")
                 .AddEmbedded("data", userResources)
@@ -40,32 +39,38 @@ namespace Users.Controllers
 
         [Authorize("read:users")]
         [HttpGet("@me")]
-        public IActionResult GetMe()
+        public async Task<ActionResult> GetMe()
         {
             var name = _usernameAccessor.Current;
-            var currentUser = UsersIncludingGroups().Single(u => u.Username == name);
-
-            return Redirect($"/api/users/{currentUser.Id}");
+            
+            var currentUser = await Users.SingleOrDefaultAsync(u => u.Username == name);
+            if (currentUser == null)
+                return BadRequest();
+            
+            return Redirect($"/api/users/{currentUser.Id}"); // TODO: consider returning an embedded resource
         }
 
         [Authorize("read:users")]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserResource>> Get(string id)
         {
-            var user = await UsersIncludingGroups().FirstOrDefaultAsync(u => u.Id == id);
+            var user = await Users.SingleOrDefaultAsync(u => u.Id == id); 
             if (user == null)
                 return NotFound();
             return new OkObjectResult(CreateUser(user));
         }
 
-        private IIncludableQueryable<User, Group> UsersIncludingGroups()
+        private IQueryable<User> Users
         {
-            return _dbContext.Users
-                .Include(u => u.UserGroups)
-                .ThenInclude(post => post.Group);
+            get {
+                return _dbContext.Users
+                    .Include(u => u.UserGroups)
+                    .ThenInclude(post => post.Group);
+            }
         }
+        
 
-        private static UserResource CreateUser(User user)
+        private static ResourceBase CreateUser(User user)
         {
             var userResource = new UserResource($"/api/users/{user.Id.ToLowerInvariant()}") { DisplayName = user.Username };
             var userGroupResources = user.UserGroups.Select(CreateUserGroupResource).ToList();            

@@ -27,7 +27,9 @@ namespace Issues.Controllers
             
             var issues = await _applicationDbContext.Issues.ToListAsync();
             
-            return new ResourceBase("/api/issues").AddEmbedded("data", issues.Select(CreateIssue).ToList());
+            return new ResourceBase("/api/issues")
+                .AddEmbedded("data", issues.Select(CreateIssue)
+                    .ToList());
         }
 
         private static ResourceBase CreateIssue(Issue issue)
@@ -59,18 +61,10 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpPost]
-        public void Create([FromBody] string title)
+        public void Create( [FromBody]IssueResource resource)
         {
 
         }
-        
-        /*
-        [Authorize("write:issues")]
-        [HttpPost("{id}")]
-        public void AppendTask(string id, [FromBody] IssueResource title)
-        {
-
-        }*/
 
         [Authorize("write:issues")]
         [HttpPut("{id}")]
@@ -88,9 +82,14 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpDelete("{id}")]
-        public ActionResult Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            return null;
+            var toRemove = await _applicationDbContext.Issues.FindAsync(id);
+            if (toRemove == null)
+                return NotFound();
+            _applicationDbContext.Issues.Remove(toRemove);
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
     }
