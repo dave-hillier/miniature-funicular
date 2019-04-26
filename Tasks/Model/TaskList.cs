@@ -2,25 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Tasks.Model
 {
     public class TaskList
     {
+        [JsonIgnore]
         public string Id { get; set; }
         
-        [Required]
         [MaxLength(255)]
         public string Title { get; set; }
                 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime LastUpdated { get; set; }
         
-        // Not on end user model - usually group, sometimes site
-        [Required]
+        [JsonIgnore]
         [MaxLength(20)]
         public string Tenant { get; set; }
         
+        [JsonIgnore]
         public List<TaskModel> Tasks { get; set; }
     }
 }

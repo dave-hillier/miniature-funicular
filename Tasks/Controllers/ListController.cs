@@ -26,15 +26,15 @@ namespace Tasks.Controllers
         
         [Authorize("read:tasks")]
         [HttpGet]
-        public ActionResult<ResourceBase> List()
+        public ActionResult<Resource> List()
         {
             var lists = GetLists()
-                .Select(ResourceFactory.CreateTaskList);
+                .Select(ResourceFactory.ToResource);
             
-            var resourceBase = new ResourceBase("/api/lists")
+            var Resource = new Resource("/api/lists")
                 .AddEmbedded("data", lists.ToList());
             
-            return Ok(resourceBase);
+            return Ok(Resource);
         }
 
         private IIncludableQueryable<TaskList, List<TaskModel>> GetLists()
@@ -47,32 +47,32 @@ namespace Tasks.Controllers
 
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<TaskListResource>> Get(string id)
+        public async Task<ActionResult<Resource>> Get(string id)
         {
             var list = await GetLists().FirstOrDefaultAsync(l => l.Id == id);
             if (list == null)
                 return NotFound();
             
-            return Ok(ResourceFactory.CreateTaskList(list));
+            return Ok(list.ToResource());
         }
 
         [Authorize("write:tasks")]
         [HttpPost]
-        public void CreateList([FromBody] TaskListResource resource)
+        public void CreateList([FromBody] TaskModel resource)
         {
             // TODO: 
         }
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
-        public void AddNewTaskToList(string id, [FromBody] TaskResource resource)
+        public void AddNewTaskToList(string id, [FromBody] TaskModel resource)
         {
             // TODO: 
         }
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
-        public ActionResult UpdateList(string id, [FromBody]TaskListResource resource)
+        public ActionResult UpdateList(string id, [FromBody]TaskList resource)
         {
             // TODO: 
             return null;
@@ -80,7 +80,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<TaskListResource> resource)
+        public ActionResult UpdatePatch(string id, [FromBody]TaskList resource)
         {
             // TODO: 
             return null;

@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using HalHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -21,18 +22,18 @@ namespace Tasks.Controllers
         
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<TaskResource>> Get(string id)
+        public async Task<ActionResult<Resource>> Get(string id)
         {
             var task = await _applicationDbContext.Tasks
                 .Include(t => t.Children).FirstOrDefaultAsync(t => t.Id == id);
             if (task == null)
                 return NotFound();
-            return new OkObjectResult(ResourceFactory.CreateTask(task));
+            return new OkObjectResult(task.ToResource());
         }
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
-        public ActionResult CreateSubTask(string id, [FromBody] TaskResource resource)
+        public ActionResult CreateSubTask(string id, [FromBody] TaskModel resource)
         {
             // TODO: 
             return null;
@@ -40,7 +41,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
-        public ActionResult Update(string id, [FromBody]TaskResource resource)
+        public ActionResult Update(string id, [FromBody]TaskModel resource)
         {
             // TODO: 
             return null;
@@ -48,7 +49,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<TaskResource> resource)
+        public ActionResult UpdatePatch(string id, [FromBody]TaskModel resource)
         {
             // TODO: 
             return null;

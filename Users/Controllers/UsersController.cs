@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Users.Resources;
 using HalHelper;
 using Microsoft.EntityFrameworkCore;
 using Users.Model;
@@ -25,12 +24,12 @@ namespace Users.Controllers
 
         [Authorize("read:users")]
         [HttpGet]
-        public async Task<ActionResult<ResourceBase>> ListForTenant()
+        public async Task<ActionResult<Resource>> ListForTenant()
         {
             var users = Users.Select(u => CreateUser(u));
             var userResources = await users.ToListAsync();
             
-            var response = new ResourceBase("/api/users")
+            var response = new Resource("/api/users")
                 .AddEmbedded("data", userResources)
                 .AddLink("current", "/api/users/@me"); 
             
@@ -52,7 +51,7 @@ namespace Users.Controllers
 
         [Authorize("read:users")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserResource>> Get(string id)
+        public async Task<ActionResult<Resource>> Get(string id)
         {
             var user = await Users.SingleOrDefaultAsync(u => u.Id == id); 
             if (user == null)
@@ -70,17 +69,17 @@ namespace Users.Controllers
         }
         
 
-        private static ResourceBase CreateUser(User user)
+        private static Resource CreateUser(User user)
         {
-            var userResource = new UserResource($"/api/users/{user.Id.ToLowerInvariant()}") { DisplayName = user.Username };
+            var userResource = new Resource($"/api/users/{user.Id.ToLowerInvariant()}") { State = user };
             var userGroupResources = user.UserGroups.Select(CreateUserGroupResource).ToList();            
             userResource.AddEmbedded("groups", userGroupResources);           
             return userResource;
         }
 
-        private static ResourceBase CreateUserGroupResource(UserGroup ug)
+        private static Resource CreateUserGroupResource(UserGroup ug)
         {
-            return new UserGroupResource($"/api/group/{ug.Group.Id.ToLowerInvariant()}") { DisplayName = ug.Group.DisplayName };
+            return new Resource($"/api/group/{ug.Group.Id.ToLowerInvariant()}") { State = ug.Group };
         }
     }
 }

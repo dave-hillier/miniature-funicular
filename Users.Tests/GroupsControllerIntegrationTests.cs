@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Users.Model;
-using Users.Resources;
 using Xunit;
 
 namespace Users.Tests
@@ -54,9 +53,6 @@ namespace Users.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
-
-            Assert.Equal(3, resource.Embedded["data"].Count);
 
             Assert.Contains("Admin", responseBody);
             Assert.Contains("Group1", responseBody);
@@ -73,9 +69,10 @@ namespace Users.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<UserGroupResource>(responseBody);
             
-            Assert.Equal("Admin", resource.DisplayName);
+            Assert.Contains("Admin", responseBody);
+            Assert.DoesNotContain("Group1", responseBody);
+            Assert.DoesNotContain("Group2", responseBody);
         }
         
         [Fact]

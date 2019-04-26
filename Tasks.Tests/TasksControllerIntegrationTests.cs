@@ -66,7 +66,7 @@ namespace Tasks.Tests
 
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal("{\"_links\":{\"self\":{\"href\":\"/api/tasks/Task1\"}},\"_embedded\":{\"children\":[{\"_links\":{\"self\":{\"href\":\"/api/tasks/Task2\"}},\"_embedded\":{}}]}}", 
+            Assert.Equal("{\"_links\":{\"self\":{\"href\":\"/api/tasks/Task1\"}},\"_embedded\":{\"children\":[{\"_links\":{\"self\":{\"href\":\"/api/tasks/Task2\"}}}]}}", 
                 responseBody);
         }
         

@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Newtonsoft.Json;
 using Users.Model;
-using Users.Resources;
 
 namespace Users.Tests
 {
@@ -69,9 +68,6 @@ namespace Users.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
-
-            Assert.Equal(2, resource.Embedded["data"].Count);
 
             Assert.Contains("Username", responseBody);
             Assert.Contains("User2", responseBody);
@@ -90,9 +86,8 @@ namespace Users.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<UserResource>(responseBody);
 
-            Assert.Equal("Username", resource.DisplayName);
+            Assert.Contains("Username", responseBody);
             Assert.Contains("Admin", responseBody);
         }
 
