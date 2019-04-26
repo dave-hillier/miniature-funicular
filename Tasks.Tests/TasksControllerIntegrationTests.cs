@@ -30,7 +30,7 @@ namespace Tasks.Tests
             }
         }
 
-        private void Seed(ApplicationDbContext context)
+        private static void Seed(ApplicationDbContext context)
         {
             var list = new TaskList
             {
@@ -69,11 +69,10 @@ namespace Tasks.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<TaskResource>(responseBody);
 
-            // TODO: check response
+            Assert.Equal("{\"_links\":{\"self\":{\"href\":\"/api/tasks/Task1\"}},\"_embedded\":{\"children\":[{\"_links\":{\"self\":{\"href\":\"/api/tasks/Task2\"}},\"_embedded\":{}}]}}", 
+                responseBody);
         }
-
         
         [Fact]
         public async void DeleteTask()
@@ -86,7 +85,6 @@ namespace Tasks.Tests
             var response2 = await _testClient.SendAsync(request2);
             Assert.Equal(HttpStatusCode.NotFound, response2.StatusCode);
         }
-
 
         [Fact]
         public async void GetNotFound()

@@ -22,7 +22,7 @@ namespace Issues.Resources
 
         public string Status { get; set; }
 
-        // TODO: location, assignee, images, createdby
+        // TODO: location, assignee, images, created by
 
         public IssueResource(string selfLink) : base(selfLink)
         {

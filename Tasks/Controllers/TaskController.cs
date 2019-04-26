@@ -34,6 +34,7 @@ namespace Tasks.Controllers
         [HttpPost("{id}")]
         public ActionResult CreateSubTask(string id, [FromBody] TaskResource resource)
         {
+            // TODO: 
             return null;
         }
 
@@ -41,6 +42,7 @@ namespace Tasks.Controllers
         [HttpPut("{id}")]
         public ActionResult Update(string id, [FromBody]TaskResource resource)
         {
+            // TODO: 
             return null;
         }
 
@@ -48,6 +50,7 @@ namespace Tasks.Controllers
         [HttpPatch("{id}")]
         public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<TaskResource> resource)
         {
+            // TODO: 
             return null;
         }
 

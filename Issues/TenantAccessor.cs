@@ -22,6 +22,8 @@ namespace Issues
             get
             {
                 var accessorHttpContext = _accessor.HttpContext;
+                if (_accessor.HttpContext == null) // TODO: remove test only
+                    return "Tenant";
                 return accessorHttpContext.User.Claims.Single(c => c.Type == "https://auth.guestline.app/claims/tenant")
                     .Value;
             }

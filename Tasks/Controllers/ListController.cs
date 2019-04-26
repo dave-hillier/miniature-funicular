@@ -30,8 +30,10 @@ namespace Tasks.Controllers
         {
             var lists = GetLists()
                 .Select(ResourceFactory.CreateTaskList);
+            
             var resourceBase = new ResourceBase("/api/lists")
                 .AddEmbedded("data", lists.ToList());
+            
             return Ok(resourceBase);
         }
 
@@ -58,20 +60,21 @@ namespace Tasks.Controllers
         [HttpPost]
         public void CreateList([FromBody] TaskListResource resource)
         {
-
+            // TODO: 
         }
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
         public void AddNewTaskToList(string id, [FromBody] TaskResource resource)
         {
-
+            // TODO: 
         }
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
         public ActionResult UpdateList(string id, [FromBody]TaskListResource resource)
         {
+            // TODO: 
             return null;
         }
 
@@ -79,6 +82,7 @@ namespace Tasks.Controllers
         [HttpPatch("{id}")]
         public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<TaskListResource> resource)
         {
+            // TODO: 
             return null;
         }
 

@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using ScopeClaim;
 using Users.Model;
 
-[assembly: InternalsVisibleTo("Users.Tests")]
+[assembly: InternalsVisibleTo("Issues.Tests")]
 
 namespace Users
 {
@@ -55,7 +55,7 @@ namespace Users
                     options.Authority = authority;
                     options.Audience = audience;
                     options.SaveToken = true;
-                });
+                }); // TODO: add this for internal traffic? https://docs.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-2.2&tabs=aspnetcore2x#use-multiple-authentication-schemes
 
             services.AddAuthorization(options =>
             {

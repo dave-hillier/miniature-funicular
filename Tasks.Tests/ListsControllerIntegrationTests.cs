@@ -30,7 +30,7 @@ namespace Tasks.Tests
             }
         }
 
-        private void Seed(ApplicationDbContext context)
+        private static void Seed(ApplicationDbContext context)
         {
             var list = new TaskList
             {
@@ -71,8 +71,10 @@ namespace Tasks.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
 
+            Assert.Equal("{\"_links\":{\"self\":{\"href\":\"/api/lists\"}},\"_embedded\":{\"data\":[{\"_links\":{\"self\":{\"href\":\"/api/lists/List1\"}},\"_embedded\":{\"tasks\":[{\"title\":\"Title1\",\"_links\":{\"self\":{\"href\":\"/api/tasks/Task1\"}},\"_embedded\":{\"children\":[{\"title\":\"Title2\",\"completed\":\"2019-04-25T00:00:00+01:00\",\"_links\":{\"self\":{\"href\":\"/api/tasks/Task2\"}},\"_embedded\":{}}]}}]}}]}}",
+                responseBody);
+ 
             
         }
 
@@ -86,7 +88,8 @@ namespace Tasks.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<TaskListResource>(responseBody);
+            
+            Assert.Equal("{\"_links\":{\"self\":{\"href\":\"/api/lists/List1\"}},\"_embedded\":{\"tasks\":[{\"title\":\"Title1\",\"_links\":{\"self\":{\"href\":\"/api/tasks/Task1\"}},\"_embedded\":{\"children\":[{\"title\":\"Title2\",\"completed\":\"2019-04-25T00:00:00+01:00\",\"_links\":{\"self\":{\"href\":\"/api/tasks/Task2\"}},\"_embedded\":{}}]}}]}}", responseBody);
         }
 
         [Fact]

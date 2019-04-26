@@ -22,7 +22,7 @@ namespace Issues.Model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Issue>().HasQueryFilter(b => b.Tenant == _accessor.CurrentTenant);
+            modelBuilder.Entity<Issue>().HasQueryFilter(b => b.Tenant == _accessor.CurrentTenant); // TODO: omit for testing?
         }
     }
 }

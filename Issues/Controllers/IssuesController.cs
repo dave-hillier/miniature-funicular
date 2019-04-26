@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Issues.Resources;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace Issues.Controllers
 {
@@ -61,23 +62,51 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpPost]
-        public void Create( [FromBody]IssueResource resource)
+        public async Task<ActionResult> Create([FromBody]IssueResource resource)
         {
+            var resourceState = CreateResourceState(resource);
+            _applicationDbContext.Issues.Add(resourceState);
+            await _applicationDbContext.SaveChangesAsync();
+            return Created($"/api/issues/{resourceState.Id}", new {}); // TODO: what should the body be here
+        }
 
+        private static Issue CreateResourceState(IssueResource resource)
+        {
+            var resourceState = new Issue()
+            {
+                Title = resource.Title,
+                Category = resource.Category,
+                Status = resource.Status,
+            };
+            return resourceState;
         }
 
         [Authorize("write:issues")]
         [HttpPut("{id}")]
-        public ActionResult Update(string id, [FromBody]IssueResource resource)
+        public async Task<ActionResult> Update(string id, [FromBody]IssueResource resource)
         {
-            return null;
+            var resourceState = CreateResourceState(resource);
+            resourceState.Id = id;
+            resourceState.Tenant = "Tenant";
+            
+            _applicationDbContext.Update(resourceState);
+            
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:issues")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(string id, [FromBody]JsonPatchDocument<IssueResource> resource)
+        public async Task<ActionResult> UpdatePatch(string id, [FromBody]IssueResource resource)
         {
-            return null;
+            var resourceState = CreateResourceState(resource);
+            resourceState.Id = id;
+            resourceState.Tenant = "Tenant";
+            
+            _applicationDbContext.Attach(resourceState).Property(x => x.Title).IsModified = true; // TODO: more properties
+            
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:issues")]
@@ -92,5 +121,6 @@ namespace Issues.Controllers
             return Ok();
         }
 
+        // TODO: attachments endpoint
     }
 }
