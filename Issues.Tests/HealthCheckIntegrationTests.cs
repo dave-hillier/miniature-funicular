@@ -1,14 +1,9 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using Xunit;
+﻿using Xunit;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using System.Net;
 using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Issues.Tests
 {

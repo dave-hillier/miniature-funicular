@@ -1,19 +1,18 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
 
 namespace Issues.Model
 {
     public class Issue
     {
+        [JsonIgnore]
         public string Id { get; set; }
 
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime LastUpdated { get; set; }
-
         // Not on end user model - usually group, sometimes site
-        [Required]
+        //[Required]
         [MaxLength(20)]
+        [JsonIgnore]
         public string Tenant { get; set; }
         
         public string Title { get; set; }

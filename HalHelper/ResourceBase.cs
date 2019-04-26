@@ -14,7 +14,6 @@ namespace HalHelper
         public Dictionary<string, Link> Links { get; set; } = new Dictionary<string, Link>();
 
         [JsonProperty(PropertyName = "_embedded")]
-        public Dictionary<string, List<ResourceBase>> Embedded { get; set; } = new Dictionary<string, List<ResourceBase>>();
+        public Dictionary<string, List<ResourceBase>> Embedded { get; set; } = new Dictionary<string, List<ResourceBase>>();       
     }
-
 }

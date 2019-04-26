@@ -3,11 +3,8 @@ using System.Threading.Tasks;
 using HalHelper;
 using Issues.Model;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Issues.Resources;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 
 namespace Issues.Controllers
 {
@@ -21,30 +18,22 @@ namespace Issues.Controllers
         {
             _applicationDbContext = applicationDbContext;
         }
+        
         [Authorize("read:issues")]
         [HttpGet]
-        public async Task<ActionResult<ResourceBase>> GetAllIssues()
-        {
-            
+        public async Task<ActionResult<Resource>> GetAllIssues()
+        { 
             var issues = await _applicationDbContext.Issues.ToListAsync();
             
-            return new ResourceBase("/api/issues")
-                .AddEmbedded("data", issues.Select(CreateIssue)
-                    .ToList());
+            return new Resource("/api/issues")
+                .AddEmbedded("data", issues.Select(CreateIssue).ToList());
         }
 
-        private static ResourceBase CreateIssue(Issue issue)
+        private static Resource CreateIssue(Issue issue)
         {
-            var resource = new IssueResource($"/api/issues/{issue.Id}")
+            var resource = new Resource($"/api/issues/{issue.Id}")
             {
-                Title = issue.Title,
-                Status = issue.Status,
-                Updated = issue.Updated,
-                Created = issue.Created,
-                Location = issue.Location,
-                Category = issue.Category,
-                Description = issue.Description,
-                Resolved = issue.Resolved
+                State = issue
             };
             // TODO: image, assignee
             return resource;
@@ -52,7 +41,7 @@ namespace Issues.Controllers
 
         [Authorize("read:issues")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<ResourceBase>> Get(string id)
+        public async Task<ActionResult<Resource>> Get(string id)
         {
             var issues = await _applicationDbContext.Issues.FindAsync(id);
             if (issues == null)
@@ -62,34 +51,23 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody]IssueResource resource)
-        {
-            var resourceState = CreateResourceState(resource);
-            _applicationDbContext.Issues.Add(resourceState);
+        public async Task<ActionResult> Create([FromBody]Issue resource)
+        {            
+            _applicationDbContext.Issues.Add(resource);
+            resource.Tenant = "Tenant";
             await _applicationDbContext.SaveChangesAsync();
-            return Created($"/api/issues/{resourceState.Id}", new {}); // TODO: what should the body be here
+            return Created($"/api/issues/{resource.Id}", new {}); // TODO: what should the body be here
         }
 
-        private static Issue CreateResourceState(IssueResource resource)
-        {
-            var resourceState = new Issue()
-            {
-                Title = resource.Title,
-                Category = resource.Category,
-                Status = resource.Status,
-            };
-            return resourceState;
-        }
 
         [Authorize("write:issues")]
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(string id, [FromBody]IssueResource resource)
-        {
-            var resourceState = CreateResourceState(resource);
-            resourceState.Id = id;
-            resourceState.Tenant = "Tenant";
+        public async Task<ActionResult> Update(string id, [FromBody]Issue resource)
+        {            
+            resource.Id = id;
+            resource.Tenant = "Tenant"; // TODO: in here?
             
-            _applicationDbContext.Update(resourceState);
+            _applicationDbContext.Update(resource);
             
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
@@ -97,13 +75,15 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpPatch("{id}")]
-        public async Task<ActionResult> UpdatePatch(string id, [FromBody]IssueResource resource)
+        public async Task<ActionResult> UpdatePatch(string id, [FromBody]Issue resource)
         {
-            var resourceState = CreateResourceState(resource);
-            resourceState.Id = id;
-            resourceState.Tenant = "Tenant";
             
-            _applicationDbContext.Attach(resourceState).Property(x => x.Title).IsModified = true; // TODO: more properties
+            resource.Id = id;
+            resource.Tenant = "Tenant";
+            
+            _applicationDbContext
+                .Attach(resource)
+                .Property(x => x.Title).IsModified = true; // TODO: more properties
             
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
@@ -121,6 +101,7 @@ namespace Issues.Controllers
             return Ok();
         }
 
+        // TODO: 
         // TODO: attachments endpoint
     }
 }

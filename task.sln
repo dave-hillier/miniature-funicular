@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Issues.Tests", "Issues.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScopeClaim", "ScopeClaim\ScopeClaim.csproj", "{F47B4314-3477-45BC-BE7B-79FCE3DC363C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HalHelper.Tests", "HalHelper.Tests\HalHelper.Tests.csproj", "{AF27AE38-8C03-4474-A6EC-7AE03ED16436}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,5 +130,17 @@ Global
 		{F47B4314-3477-45BC-BE7B-79FCE3DC363C}.Release|x64.Build.0 = Release|Any CPU
 		{F47B4314-3477-45BC-BE7B-79FCE3DC363C}.Release|x86.ActiveCfg = Release|Any CPU
 		{F47B4314-3477-45BC-BE7B-79FCE3DC363C}.Release|x86.Build.0 = Release|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Debug|x64.Build.0 = Debug|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Debug|x86.Build.0 = Debug|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Release|x64.ActiveCfg = Release|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Release|x64.Build.0 = Release|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Release|x86.ActiveCfg = Release|Any CPU
+		{AF27AE38-8C03-4474-A6EC-7AE03ED16436}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

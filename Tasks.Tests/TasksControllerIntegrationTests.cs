@@ -1,14 +1,10 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using HalHelper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Newtonsoft.Json;
 using Tasks.Model;
-using Tasks.Resources;
 
 namespace Tasks.Tests
 {

@@ -1,5 +1,3 @@
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Issues.Model

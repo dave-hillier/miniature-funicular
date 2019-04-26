@@ -1,15 +1,10 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using HalHelper;
-using Issues.Controllers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using Newtonsoft.Json;
 using Issues.Model;
-using Issues.Resources;
 
 namespace Issues.Tests
 {
@@ -51,23 +46,7 @@ namespace Issues.Tests
             });
             context.SaveChanges();
         }
-
-        [Fact]
-        public void DatabaseShit()
-        {
-            using (var scope = _testServer.Host.Services.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-
-                var issue = context.Issues.Find("Issue1");
-                
-                Assert.Equal("Title1", issue.Title);
-                
-                
-            }
-            
-        }
-
+       
         [Fact]
         public async void GetAllIssues()
         {
@@ -77,7 +56,9 @@ namespace Issues.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseBody = await response.Content.ReadAsStringAsync();
-            var resource = JsonConvert.DeserializeObject<ResourceBase>(responseBody);
+            
+            Assert.Contains("\"title\":\"Title2\",\"description\":\"Description2\"", responseBody);
+            Assert.Contains("\"title\":\"Title1\",\"description\":\"Description1\"", responseBody);
         }
 
         [Fact]
@@ -91,7 +72,7 @@ namespace Issues.Tests
 
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            Assert.Equal("{\"title\":\"Title1\",\"description\":\"Description1\",\"_links\":{\"self\":{\"href\":\"/api/issues/Issue1\"}},\"_embedded\":{}}", responseBody);
+            Assert.Contains("\"title\":\"Title1\",\"description\":\"Description1\"", responseBody);
         }
 
 
@@ -124,6 +105,7 @@ namespace Issues.Tests
             {
                 Title = "x"
             };
+            
 
             var request = HttpClientHelper.CreateJsonRequest($"/api/issues", HttpMethod.Post, payload);
 
@@ -169,15 +151,15 @@ namespace Issues.Tests
 
             var request = HttpClientHelper.CreateJsonRequest($"/api/issues/Issue1", HttpMethod.Patch, payload);
 
-            var response = await _testClient.SendAsync(request);
+            var patchResponse = await _testClient.SendAsync(request);
             
+
             var request1 = HttpClientHelper.CreateJsonRequest($"/api/Issues/Issue1", HttpMethod.Get, null);
+            var getResponse = await _testClient.SendAsync(request1);
 
-            var response1 = await _testClient.SendAsync(request1);
-
-            Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
-
-            var responseBody = await response1.Content.ReadAsStringAsync();
+            var responseBody = await getResponse.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
+            
             Assert.Contains("\"title\":\"New Title\"", responseBody);
             Assert.Contains("Description1", responseBody);
         }
