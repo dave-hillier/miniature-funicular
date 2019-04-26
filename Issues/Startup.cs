@@ -34,8 +34,7 @@ namespace Issues
 
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
-            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
-            services.TryAddScoped<ITenantAccessor, TenantAccessor>();
+
 
             var audience = Configuration["Authentication:Audience"];
             var authority = Configuration["Authentication:Authority"];
@@ -60,6 +59,10 @@ namespace Issues
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
+            
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
+            services.TryAddScoped<ITenantAccessor, TenantAccessor>();
+            services.TryAddSingleton<IFileStorage, BlobFileStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -81,4 +84,5 @@ namespace Issues
             app.UseMvc();
         }
     }
+   
 }

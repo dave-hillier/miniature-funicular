@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using HalHelper;
 using Issues.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,24 +17,29 @@ namespace Issues.Controllers
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly ITenantAccessor _tenantAccessor;
+        private readonly IFileStorage _fileStorage;
 
-        public IssuesController(ApplicationDbContext applicationDbContext, ITenantAccessor tenantAccessor)
+        public IssuesController(ApplicationDbContext applicationDbContext, 
+            ITenantAccessor tenantAccessor, 
+            IFileStorage fileStorage)
         {
             _applicationDbContext = applicationDbContext;
             _tenantAccessor = tenantAccessor;
+            _fileStorage = fileStorage;
         }
         
         [Authorize("read:issues")]
         [HttpGet]
         public async Task<ActionResult<Resource>> GetAllIssues()
         { 
-            var issues = await _applicationDbContext.Issues.ToListAsync();
+            var issues = await _applicationDbContext.Issues
+                .Include(i => i.Images).ToListAsync();
             
             return new Resource("/api/issues")
-                .AddEmbedded("data", issues.Select(CreateIssue).ToList());
+                .AddEmbedded("data", issues.Select(ToResource).ToList());
         }
 
-        private static Resource CreateIssue(Issue issue)
+        private static Resource ToResource(Issue issue)
         {
             var resource = new Resource($"/api/issues/{issue.Id}")
             {
@@ -45,12 +53,36 @@ namespace Issues.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Resource>> Get(string id)
         {
-            var issues = await _applicationDbContext.Issues.FindAsync(id);
+            var issues = await _applicationDbContext.Issues
+                .Include(i => i.Images)
+                .SingleOrDefaultAsync(i => i.Id == id);
+            
             if (issues == null)
                 return NotFound();
-            return Ok(CreateIssue(issues));
+            return Ok(ToResource(issues));
         }
 
+        [Authorize("write:issues")] // TODO: test me
+        [HttpPost]
+        public async Task<ActionResult> CreateFromForm([FromForm]IssueForm issueForm)
+        {
+            var tenant = _tenantAccessor.Current;
+            var images = await Task.WhenAll(
+                issueForm.Photos.Select(photo => _fileStorage.StoreAsync(tenant, photo))
+            );
+
+            var resource = new Issue
+            {
+                Tenant = _tenantAccessor.Current,
+                Description = issueForm.Description,                
+            };
+            resource.Images = images.Select(i => new IssueImage {Parent = resource, ImageUrl = i}).ToList();
+            _applicationDbContext.Issues.Add(resource);
+            await _applicationDbContext.Images.AddRangeAsync(resource.Images);
+            await _applicationDbContext.SaveChangesAsync();
+            return Created($"/api/issues/{resource.Id}", new {}); // TODO: what should the body be here
+        }
+        
         [Authorize("write:issues")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody]Issue resource)
@@ -105,5 +137,20 @@ namespace Issues.Controllers
 
         // TODO: 
         // TODO: attachments endpoint
+    }
+
+    public class IssueForm // TODO: rest of stuff
+    {
+        [Required]
+        [MinLength(10)]
+        [DataType(DataType.Text)] // URL?
+        public string Location { get; set; }
+        
+        [Required]
+        [MinLength(1)]
+        [DataType(DataType.Text)]
+        public string Description { get; set; }
+
+        public IEnumerable<IFormFile> Photos { get; set; } = new List<IFormFile>();
     }
 }

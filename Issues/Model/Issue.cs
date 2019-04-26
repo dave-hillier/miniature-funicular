@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 using Newtonsoft.Json;
 
 namespace Issues.Model
@@ -9,8 +11,6 @@ namespace Issues.Model
         [JsonIgnore]
         public string Id { get; set; }
 
-        // Not on end user model - usually group, sometimes site
-        //[Required]
         [MaxLength(20)]
         [JsonIgnore]
         public string Tenant { get; set; }
@@ -30,8 +30,9 @@ namespace Issues.Model
         public string Location { get; set; } // TODO: locations
         
         public string Status { get; set; }
+
+        public List<IssueImage> Images { get; set; }
         
-        // TODO: images
         // TODO: assignee
         // TODO: action - deduct from stock etc
     }

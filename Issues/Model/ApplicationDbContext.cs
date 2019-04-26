@@ -7,6 +7,8 @@ namespace Issues.Model
     {
         private readonly ITenantAccessor _accessor;
         public DbSet<Issue> Issues { get; set; }
+        
+        public DbSet<IssueImage> Images { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ITenantAccessor accessor) : base(options)
         {
