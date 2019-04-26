@@ -10,7 +10,13 @@ namespace Tasks.Resources
         public static Resource ToResource(this TaskList taskList)
         {
             var tasks = taskList.Tasks.Select(ToResource);
-            return new Resource($"/api/lists/{taskList.Id}").AddEmbedded("tasks", tasks.ToList());
+            return new Resource($"/api/lists/{taskList.Id}")
+                {
+                    State = taskList
+                }
+                .AddEmbedded("tasks", tasks
+                    .OrderBy(t => ((TaskModel)t.State).Position)
+                    .ToList());
         }
 
         public static Resource ToResource(this TaskModel taskModel)

@@ -36,6 +36,8 @@ namespace Tasks.Tests
             };            
             context.List.Add(list);
             
+
+            
             var task1 = new TaskModel
             {
                 Id = "Task1",
@@ -51,6 +53,30 @@ namespace Tasks.Tests
                 Parent = task1
             };
             context.Tasks.Add(task2);
+            
+            var list2 = new TaskList
+            {
+                Tenant = "Tenant", 
+                Title = "List2",
+                Id = "List2"
+            };            
+            context.List.Add(list2);
+            var task3 = new TaskModel
+            {
+                Id = "Task3",
+                Tenant = "Tenant", 
+                ParentTaskList = list2,
+                Position = "b"
+            };
+            context.Tasks.Add(task3);
+            var task4 = new TaskModel
+            {
+                Id = "Task4",
+                Tenant = "Tenant", 
+                ParentTaskList = list2,
+                Position = "a"
+            };
+            context.Tasks.Add(task4);
             
             context.SaveChanges();
         }
@@ -92,5 +118,73 @@ namespace Tasks.Tests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
         }
+        
+        [Fact]
+        public async void UpdateTask()
+        {
+            var payload = new 
+            {
+                Title = "New Title"
+            };            
+
+            var request = HttpClientHelper.CreateJsonRequest("/api/tasks/Task1", HttpMethod.Put, payload);
+            var response = await _testClient.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
+            var request2 = HttpClientHelper.CreateJsonRequest("/api/tasks/Task1", HttpMethod.Get, null);
+            var response2 = await _testClient.SendAsync(request2);
+            Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
+            
+            var responseBody = await response2.Content.ReadAsStringAsync();
+            
+            Assert.Contains("\"New Title\"", responseBody);
+        }
+        
+        [Fact]
+        public async void PatchTask()
+        {
+            var payload = new 
+            {
+                Title = "Patch Title"
+            };            
+
+            var request = HttpClientHelper.CreateJsonRequest("/api/tasks/Task1", HttpMethod.Patch, payload);
+            var response = await _testClient.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
+            var request2 = HttpClientHelper.CreateJsonRequest("/api/tasks/Task1", HttpMethod.Get, null);
+            var response2 = await _testClient.SendAsync(request2);
+            Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
+            
+            var responseBody = await response2.Content.ReadAsStringAsync();
+            
+            Assert.Contains("\"Patch Title\"", responseBody);
+        }
+        
+        [Fact]
+        public async void CreateSubTask()
+        {
+            var payload = new 
+            {
+                Title = "New Task on Task1"
+            };            
+
+            var request = HttpClientHelper.CreateJsonRequest($"/api/tasks/Task1", HttpMethod.Post, payload);
+            var response = await _testClient.SendAsync(request);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            var location = response.Headers.Location.ToString();
+            Assert.Matches("/api/tasks/.+", location);
+            
+            var request2 = HttpClientHelper.CreateJsonRequest("/api/tasks/Task1", HttpMethod.Get, null);
+            var response2 = await _testClient.SendAsync(request2);
+            Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
+            var responseBody = await response2.Content.ReadAsStringAsync();
+            
+            Assert.Contains("\"New Task on Task1\"", responseBody);          
+        }
+
     }
 }

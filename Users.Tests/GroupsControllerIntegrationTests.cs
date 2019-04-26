@@ -84,6 +84,6 @@ namespace Users.Tests
             
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);           
         }
-        // TODO: multi-tenancy
+        // TODO: multi-tenancy tests
     }
 }

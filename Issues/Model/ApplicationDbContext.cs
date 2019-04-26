@@ -20,7 +20,7 @@ namespace Issues.Model
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Issue>().HasQueryFilter(b => b.Tenant == _accessor.CurrentTenant); // TODO: omit for testing?
+            modelBuilder.Entity<Issue>().HasQueryFilter(b => b.Tenant == _accessor.Current); // TODO: omit for testing?
         }
     }
 }

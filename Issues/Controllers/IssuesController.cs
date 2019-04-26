@@ -13,10 +13,12 @@ namespace Issues.Controllers
     public class IssuesController : ControllerBase
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly ITenantAccessor _tenantAccessor;
 
-        public IssuesController(ApplicationDbContext applicationDbContext)
+        public IssuesController(ApplicationDbContext applicationDbContext, ITenantAccessor tenantAccessor)
         {
             _applicationDbContext = applicationDbContext;
+            _tenantAccessor = tenantAccessor;
         }
         
         [Authorize("read:issues")]
@@ -52,8 +54,8 @@ namespace Issues.Controllers
         [Authorize("write:issues")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody]Issue resource)
-        {   
-            resource.Tenant = "Tenant"; // TODO: 
+        {
+            resource.Tenant = _tenantAccessor.Current;
             _applicationDbContext.Issues.Add(resource);            
             await _applicationDbContext.SaveChangesAsync();
             return Created($"/api/issues/{resource.Id}", new {}); // TODO: what should the body be here
@@ -65,7 +67,7 @@ namespace Issues.Controllers
         public async Task<ActionResult> Update(string id, [FromBody]Issue resource)
         {            
             resource.Id = id;
-            resource.Tenant = "Tenant"; // TODO: in here?
+            resource.Tenant = _tenantAccessor.Current;
             
             _applicationDbContext.Update(resource);
             
@@ -79,7 +81,7 @@ namespace Issues.Controllers
         {
             
             resource.Id = id;
-            resource.Tenant = "Tenant";
+            resource.Tenant = _tenantAccessor.Current;
             
             _applicationDbContext
                 .Attach(resource)

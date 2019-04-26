@@ -104,8 +104,7 @@ namespace Issues.Tests
             var payload = new 
             {
                 Title = "x"
-            };
-            
+            };            
 
             var request = HttpClientHelper.CreateJsonRequest($"/api/issues", HttpMethod.Post, payload);
 

@@ -7,7 +7,6 @@ using System.Net.Http;
 
 namespace Issues.Tests
 {
-    // TODO: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-2.2#customize-webapplicationfactory
 
     public class HealthCheckIntegrationTests
     {

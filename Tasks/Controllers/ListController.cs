@@ -72,8 +72,12 @@ namespace Tasks.Controllers
         [HttpPost("{id}")]
         public async Task<ActionResult> AddNewTaskToList(string id, [FromBody] TaskModel resource)
         {
+            var list = await GetLists().FirstOrDefaultAsync(l => l.Id == id);
+            if (list == null)
+                return BadRequest();
+            
             resource.Tenant = _tenantAccessor.Current;
-            //resource.ParentTaskList = id; // TODO: 
+            resource.ParentTaskList = list;
             
             _applicationDbContext.Tasks.Add(resource);            
             await _applicationDbContext.SaveChangesAsync();    
@@ -88,7 +92,6 @@ namespace Tasks.Controllers
             resource.Tenant = _tenantAccessor.Current;
             resource.Id = id;
             
-            // TODO: 
             _applicationDbContext.Update(resource);
             
             await _applicationDbContext.SaveChangesAsync();
@@ -99,12 +102,21 @@ namespace Tasks.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskList resource)
         {
+            var px = resource.GetType()
+                .GetProperties()
+                .Where(prop => prop.GetValue(resource, null) != null) // TODO: omit defaults...
+                .Select(prop => prop.Name)
+                .Where(prop => prop != "Id");
+            
             resource.Tenant = _tenantAccessor.Current;
             resource.Id = id;
             
-            // TODO: 
-            _applicationDbContext.Attach(resource);
-            // TODO: select fields
+            var attached = _applicationDbContext.Attach(resource);
+            
+            foreach (var prop in px)
+            {
+                attached.Property(prop).IsModified = true;
+            }
             
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
@@ -112,10 +124,9 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(string id) // TODO: test
+        public async Task<ActionResult> Delete(string id)
         {          
             var toRemove = await _applicationDbContext.List.FindAsync(id); 
-            // TODO: ensure that I can't delete other tenants
             if (toRemove == null)
                 return NotFound();
             _applicationDbContext.List.Remove(toRemove);

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
@@ -33,13 +34,16 @@ namespace Tasks.Controllers
         }
 
         [Authorize("write:tasks")]
-        [HttpPost("{id}")]
-        public async Task<ActionResult> CreateSubTask(string id, [FromBody] TaskModel resource)
+        [HttpPost("{parentId}")]
+        public async Task<ActionResult> CreateSubTask(string parentId, [FromBody] TaskModel resource)
         {
             resource.Tenant = _tenantAccessor.Current;
-            // TODO: 
-            await _applicationDbContext.SaveChangesAsync();
-            return Ok();
+            var parentTask = await _applicationDbContext.Tasks.FindAsync(parentId);
+            resource.Tenant = _tenantAccessor.Current;
+            resource.Parent = parentTask;
+            _applicationDbContext.Tasks.Add(resource);            
+            await _applicationDbContext.SaveChangesAsync();    
+            return Created($"/api/tasks/{resource.Id}", new {});
         }
 
         [Authorize("write:tasks")]
@@ -48,7 +52,9 @@ namespace Tasks.Controllers
         {
             resource.Tenant = _tenantAccessor.Current;
             resource.Id = id;
-            // TODO: 
+            
+            _applicationDbContext.Update(resource);
+            
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }
@@ -57,9 +63,22 @@ namespace Tasks.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskModel resource)
         {
+            var px = resource.GetType()
+                .GetProperties()
+                .Where(prop => prop.GetValue(resource, null) != null) // TODO: omit defaults...
+                .Select(prop => prop.Name)
+                .Where(prop => prop != "Id");
+            
             resource.Tenant = _tenantAccessor.Current;
             resource.Id = id;
-            // TODO: 
+            
+            var attached = _applicationDbContext.Attach(resource);
+            
+            foreach (var prop in px)
+            {
+                attached.Property(prop).IsModified = true;
+            }
+            
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }

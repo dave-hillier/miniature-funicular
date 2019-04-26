@@ -21,7 +21,7 @@ namespace Users.Tests
             var epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var payload = new JwtPayload
             {
-                {"sub", "Username@Tenant"}, // TODO: guid?
+                {"sub", "Username@Tenant"},
                 {"iss", "https://authority"},
                 {"https://auth.guestline.app/claims/tenant", "Tenant"},
                 {"https://auth.guestline.app/claims/username", "Username"},

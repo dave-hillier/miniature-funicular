@@ -46,7 +46,7 @@ namespace Users.Controllers
             if (currentUser == null)
                 return BadRequest();
             
-            return Redirect($"/api/users/{currentUser.Id}"); // TODO: consider returning an embedded resource
+            return Redirect($"/api/users/{currentUser.Id}"); 
         }
 
         [Authorize("read:users")]
