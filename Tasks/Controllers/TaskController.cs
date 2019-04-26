@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tasks.Model;
@@ -14,10 +13,12 @@ namespace Tasks.Controllers
     public class TasksController : ControllerBase
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly ITenantAccessor _tenantAccessor;
 
-        public TasksController(ApplicationDbContext applicationDbContext)
+        public TasksController(ApplicationDbContext applicationDbContext, ITenantAccessor tenantAccessor)
         {
             _applicationDbContext = applicationDbContext;
+            _tenantAccessor = tenantAccessor;
         }
         
         [Authorize("read:tasks")]
@@ -33,26 +34,34 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
-        public ActionResult CreateSubTask(string id, [FromBody] TaskModel resource)
+        public async Task<ActionResult> CreateSubTask(string id, [FromBody] TaskModel resource)
         {
+            resource.Tenant = _tenantAccessor.Current;
             // TODO: 
-            return null;
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
-        public ActionResult Update(string id, [FromBody]TaskModel resource)
+        public async Task<ActionResult> Update(string id, [FromBody]TaskModel resource)
         {
+            resource.Tenant = _tenantAccessor.Current;
+            resource.Id = id;
             // TODO: 
-            return null;
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(string id, [FromBody]TaskModel resource)
+        public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskModel resource)
         {
+            resource.Tenant = _tenantAccessor.Current;
+            resource.Id = id;
             // TODO: 
-            return null;
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:tasks")]

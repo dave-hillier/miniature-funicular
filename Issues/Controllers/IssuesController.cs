@@ -52,9 +52,9 @@ namespace Issues.Controllers
         [Authorize("write:issues")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody]Issue resource)
-        {            
-            _applicationDbContext.Issues.Add(resource);
-            resource.Tenant = "Tenant";
+        {   
+            resource.Tenant = "Tenant"; // TODO: 
+            _applicationDbContext.Issues.Add(resource);            
             await _applicationDbContext.SaveChangesAsync();
             return Created($"/api/issues/{resource.Id}", new {}); // TODO: what should the body be here
         }

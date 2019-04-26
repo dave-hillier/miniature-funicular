@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -18,10 +18,12 @@ namespace Tasks.Controllers
     public class ListsController : ControllerBase
     {
         private readonly ApplicationDbContext _applicationDbContext;
+        private readonly ITenantAccessor _tenantAccessor;
 
-        public ListsController(ApplicationDbContext applicationDbContext)
+        public ListsController(ApplicationDbContext applicationDbContext, ITenantAccessor tenantAccessor)
         {
             _applicationDbContext = applicationDbContext;
+            _tenantAccessor = tenantAccessor;
         }
         
         [Authorize("read:tasks")]
@@ -31,10 +33,10 @@ namespace Tasks.Controllers
             var lists = GetLists()
                 .Select(ResourceFactory.ToResource);
             
-            var Resource = new Resource("/api/lists")
+            var resource = new Resource("/api/lists")
                 .AddEmbedded("data", lists.ToList());
             
-            return Ok(Resource);
+            return Ok(resource);
         }
 
         private IIncludableQueryable<TaskList, List<TaskModel>> GetLists()
@@ -58,39 +60,62 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost]
-        public void CreateList([FromBody] TaskModel resource)
+        public async Task<ActionResult> CreateList([FromBody] TaskList resource)
         {
-            // TODO: 
+            resource.Tenant = _tenantAccessor.Current;
+            _applicationDbContext.List.Add(resource);            
+            await _applicationDbContext.SaveChangesAsync();
+            return Created($"/api/lists/{resource.Id}", new {}); // TODO: what should the body be here
         }
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
-        public void AddNewTaskToList(string id, [FromBody] TaskModel resource)
+        public async Task<ActionResult> AddNewTaskToList(string id, [FromBody] TaskModel resource)
         {
-            // TODO: 
+            resource.Tenant = _tenantAccessor.Current;
+            //resource.ParentTaskList = id; // TODO: 
+            
+            _applicationDbContext.Tasks.Add(resource);            
+            await _applicationDbContext.SaveChangesAsync();    
+            return Created($"/api/tasks/{resource.Id}", new {}); // TODO: what should the body be here
+
         }
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
-        public ActionResult UpdateList(string id, [FromBody]TaskList resource)
+        public async Task<ActionResult> UpdateList(string id, [FromBody]TaskList resource)
         {
+            resource.Tenant = _tenantAccessor.Current;
+            resource.Id = id;
+            
             // TODO: 
-            return null;
+            _applicationDbContext.Update(resource);
+            
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
-        public ActionResult UpdatePatch(string id, [FromBody]TaskList resource)
+        public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskList resource)
         {
+            resource.Tenant = _tenantAccessor.Current;
+            resource.Id = id;
+            
             // TODO: 
-            return null;
+            _applicationDbContext.Attach(resource);
+            // TODO: select fields
+            
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
         }
 
         [Authorize("write:tasks")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id) // TODO: test
-        {
+        {          
             var toRemove = await _applicationDbContext.List.FindAsync(id); 
+            // TODO: ensure that I can't delete other tenants
             if (toRemove == null)
                 return NotFound();
             _applicationDbContext.List.Remove(toRemove);
