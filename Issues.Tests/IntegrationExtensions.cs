@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -76,9 +77,9 @@ namespace Issues.Tests
             throw new System.NotImplementedException();
         }
 
-        public Task Check()
+        public Task<bool> ExistsAsync()
         {
-            throw new System.NotImplementedException();
+            return Task.FromResult(true);
         }
     }
 }

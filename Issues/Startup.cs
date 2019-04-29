@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Issues.Model;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ScopeClaim;
 
 namespace Issues
@@ -32,7 +33,9 @@ namespace Issues
               })
               .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddHealthChecks();
+            services
+                .AddHealthChecks()
+                .AddCheck<FileStorageHealthCheck>("BlobStore");
             services.AddHttpContextAccessor();
 
 
