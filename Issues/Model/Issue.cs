@@ -14,8 +14,6 @@ namespace Issues.Model
         [MaxLength(20)]
         [JsonIgnore]
         public string Tenant { get; set; }
-        
-        public string Title { get; set; }
 
         public DateTime Updated { get; set; }
 
@@ -29,11 +27,10 @@ namespace Issues.Model
 
         public string Location { get; set; } // TODO: locations
         
-        public string Status { get; set; }
+        public string Status { get; set; } 
 
         public List<IssueImage> Images { get; set; }
         
-        // TODO: assignee
         // TODO: action - deduct from stock etc
     }
 }

@@ -36,11 +36,12 @@ namespace Tasks.Controllers
         [Authorize("write:tasks")]
         [HttpPost("{parentId}")]
         public async Task<ActionResult> CreateSubTask(string parentId, [FromBody] TaskModel resource)
-        {
-            resource.Tenant = _tenantAccessor.Current;
+        {            
             var parentTask = await _applicationDbContext.Tasks.FindAsync(parentId);
+            
             resource.Tenant = _tenantAccessor.Current;
             resource.Parent = parentTask;
+            
             _applicationDbContext.Tasks.Add(resource);            
             await _applicationDbContext.SaveChangesAsync();    
             return Created($"/api/tasks/{resource.Id}", new {});
@@ -50,11 +51,13 @@ namespace Tasks.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(string id, [FromBody]TaskModel resource)
         {
-            resource.Tenant = _tenantAccessor.Current;
-            resource.Id = id;
-            
-            _applicationDbContext.Update(resource);
-            
+            var task = await _applicationDbContext.Tasks.FindAsync(id); 
+            if (task == null)
+                return NotFound();
+
+            task.Title = resource.Title;
+            task.Position = resource.Position;
+
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }
@@ -63,22 +66,13 @@ namespace Tasks.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskModel resource)
         {
-            var px = resource.GetType()
-                .GetProperties()
-                .Where(prop => prop.GetValue(resource, null) != null) // TODO: omit defaults...
-                .Select(prop => prop.Name)
-                .Where(prop => prop != "Id");
-            
-            resource.Tenant = _tenantAccessor.Current;
-            resource.Id = id;
-            
-            var attached = _applicationDbContext.Attach(resource);
-            
-            foreach (var prop in px)
-            {
-                attached.Property(prop).IsModified = true;
-            }
-            
+            var task = await _applicationDbContext.Tasks.FindAsync(id); 
+            if (task == null)
+                return NotFound();
+
+            if (resource.Title != null) task.Title = resource.Title;
+            if (resource.Position != null) task.Position = resource.Position;
+
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }

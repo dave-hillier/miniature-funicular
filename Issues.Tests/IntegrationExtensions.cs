@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Issues.Model;
+using Microsoft.AspNetCore.Http;
 
 namespace Issues.Tests
 {
@@ -56,6 +58,7 @@ namespace Issues.Tests
                 {
                     services.ConfigureInMemoryDatabases(inMemoryDatabaseRoot);
                     services.ConfigureUnvalidatedAuth();
+                    services.AddSingleton<IFileStorage, FakeStorage>();
                 })
                 .ConfigureLogging(logging =>
                 {
@@ -63,6 +66,19 @@ namespace Issues.Tests
                     logging.AddConsole();
                 })
                 .UseStartup<Startup>();
+        }
+    }
+
+    internal class FakeStorage:IFileStorage
+    {
+        public Task<string> StoreAsync(string tenant, IFormFile file)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task Check()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

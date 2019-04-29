@@ -89,11 +89,12 @@ namespace Tasks.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateList(string id, [FromBody]TaskList resource)
         {
-            resource.Tenant = _tenantAccessor.Current;
-            resource.Id = id;
-            
-            _applicationDbContext.Update(resource);
-            
+            var taskList = await _applicationDbContext.List.FindAsync(id); 
+            if (taskList == null)
+                return NotFound();
+
+            taskList.Title = resource.Title;
+
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }
@@ -102,22 +103,12 @@ namespace Tasks.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskList resource)
         {
-            var px = resource.GetType()
-                .GetProperties()
-                .Where(prop => prop.GetValue(resource, null) != null) // TODO: omit defaults...
-                .Select(prop => prop.Name)
-                .Where(prop => prop != "Id");
-            
-            resource.Tenant = _tenantAccessor.Current;
-            resource.Id = id;
-            
-            var attached = _applicationDbContext.Attach(resource);
-            
-            foreach (var prop in px)
-            {
-                attached.Property(prop).IsModified = true;
-            }
-            
+            var taskList = await _applicationDbContext.List.FindAsync(id); 
+            if (taskList == null)
+                return NotFound();
+
+            if (resource.Title != null) taskList.Title = resource.Title;
+
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }

@@ -40,12 +40,15 @@ namespace Issues.Controllers
         }
 
         private static Resource ToResource(Issue issue)
-        {
+        {            
+            var images = new Resource($"/api/issues/{issue.Id}/images")
+            {
+                State = new { data = issue.Images.Select(i => i.ImageUrl) }
+            };
             var resource = new Resource($"/api/issues/{issue.Id}")
             {
                 State = issue
-            };
-            // TODO: image, assignee
+            }.AddEmbedded("images", images);
             return resource;
         }
 
@@ -68,7 +71,7 @@ namespace Issues.Controllers
         {
             var tenant = _tenantAccessor.Current;
             var images = await Task.WhenAll(
-                issueForm.Photos.Select(photo => _fileStorage.StoreAsync(tenant, photo))
+                issueForm.Images.Select(photo => _fileStorage.StoreAsync(tenant, photo))
             );
 
             var resource = new Issue
@@ -84,24 +87,59 @@ namespace Issues.Controllers
         }
         
         [Authorize("write:issues")]
-        [HttpPost]
+        [HttpPost("/resource")]
         public async Task<ActionResult> Create([FromBody]Issue resource)
         {
             resource.Tenant = _tenantAccessor.Current;
             _applicationDbContext.Issues.Add(resource);            
             await _applicationDbContext.SaveChangesAsync();
-            return Created($"/api/issues/{resource.Id}", new {}); // TODO: what should the body be here
+            return Created($"/api/issues/{resource.Id}", new {});
         }
 
+        
+        [Authorize("write:issues")]
+        [HttpPost("{id}/images")]
+        public async Task<ActionResult> AddImage(string id, [FromBody]string imageUrl)
+        {
+            var issue = await _applicationDbContext.Issues.FindAsync(id);
+            if (issue == null)
+                return NotFound();
+
+            var listImage = new IssueImage {Parent = issue, ImageUrl = imageUrl};
+            issue.Images.Add(listImage); // not sure this does anything
+            _applicationDbContext.Images.Add(listImage);
+         
+            await _applicationDbContext.SaveChangesAsync();
+            return Created($"/api/issues/{issue.Id}/images", new {});
+        }
+        
+        [Authorize("write:issues")]
+        [HttpDelete("{id}/images")]
+        public async Task<ActionResult> Delete(string id, [FromBody]string imageUrl)
+        {
+            var issue = await _applicationDbContext.Issues.FindAsync(id);
+            if (issue == null)
+                return NotFound();
+            
+            var image = issue.Images.FirstOrDefault(i => i.ImageUrl == imageUrl);
+            issue.Images.Remove(image);            
+            
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok();
+        }
 
         [Authorize("write:issues")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(string id, [FromBody]Issue resource)
         {            
-            resource.Id = id;
-            resource.Tenant = _tenantAccessor.Current;
+            var issue = await _applicationDbContext.Issues.FindAsync(id);
+            if (issue == null)
+                return NotFound();
             
-            _applicationDbContext.Update(resource);
+            issue.Status = resource.Status;
+            issue.Category = resource.Category;
+            issue.Location = resource.Location;
+            issue.Description = resource.Description;
             
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
@@ -111,14 +149,15 @@ namespace Issues.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]Issue resource)
         {
-            
-            resource.Id = id;
-            resource.Tenant = _tenantAccessor.Current;
-            
-            _applicationDbContext
-                .Attach(resource)
-                .Property(x => x.Title).IsModified = true; // TODO: more properties
-            
+            var issue = await _applicationDbContext.Issues.FindAsync(id);
+            if (issue == null)
+                return NotFound();
+
+            if (resource.Status != null) issue.Status = resource.Status;
+            if (resource.Category != null) issue.Category = resource.Category;
+            if (resource.Location != null) issue.Location = resource.Location;
+            if (resource.Description != null) issue.Description = resource.Description;
+
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }
@@ -130,13 +169,11 @@ namespace Issues.Controllers
             var toRemove = await _applicationDbContext.Issues.FindAsync(id);
             if (toRemove == null)
                 return NotFound();
+            
             _applicationDbContext.Issues.Remove(toRemove);
             await _applicationDbContext.SaveChangesAsync();
             return Ok();
         }
-
-        // TODO: 
-        // TODO: attachments endpoint
     }
 
     public class IssueForm // TODO: rest of stuff
@@ -144,13 +181,13 @@ namespace Issues.Controllers
         [Required]
         [MinLength(10)]
         [DataType(DataType.Text)] // URL?
-        public string Location { get; set; }
+        public string Location { get; set; } // TODO: multiple
         
         [Required]
         [MinLength(1)]
         [DataType(DataType.Text)]
         public string Description { get; set; }
 
-        public IEnumerable<IFormFile> Photos { get; set; } = new List<IFormFile>();
+        public IEnumerable<IFormFile> Images { get; set; } = new List<IFormFile>();
     }
 }
