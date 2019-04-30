@@ -70,7 +70,7 @@ namespace Issues.Tests
         }
     }
 
-    internal class FakeStorage:IFileStorage
+    internal class FakeStorage : IFileStorage
     {
         public Task<string> StoreAsync(string tenant, IFormFile file)
         {

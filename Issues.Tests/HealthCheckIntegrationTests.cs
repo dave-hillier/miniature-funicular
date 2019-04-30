@@ -11,24 +11,13 @@ namespace Issues.Tests
     public class HealthCheckIntegrationTests
     {
         private readonly HttpClient _testClient;
-        private readonly TestServer _testServer;
 
         public HealthCheckIntegrationTests()
         {
-            var inMemoryDatabaseRoot = new InMemoryDatabaseRoot();
-            var builder = new WebHostBuilder()
-                .UseEnvironment("Test")
-                .UseSetting("Authentication:Audience", "https://audience")
-                .UseSetting("Authentication:Authority", "https://authority")
-                .ConfigureServices(services =>
-                {
-                    services.ConfigureInMemoryDatabases(inMemoryDatabaseRoot);
-                    services.ConfigureUnvalidatedAuth();
-                })
-                .UseStartup<Startup>();
+            var builder = new WebHostBuilder().ConfigureTest();
 
-            _testServer = new TestServer(builder);
-            _testClient = _testServer.CreateClient();
+            var testServer = new TestServer(builder);
+            _testClient = testServer.CreateClient();
         }
 
         [Fact]
