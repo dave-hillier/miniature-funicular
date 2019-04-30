@@ -67,6 +67,7 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")] // TODO: test me
         [HttpPost]
+        [Consumes("application/x-www-form-urlencoded")]
         public async Task<ActionResult> CreateFromForm([FromForm]IssueForm issueForm)
         {
             var tenant = _tenantAccessor.Current;

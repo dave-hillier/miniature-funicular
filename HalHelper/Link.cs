@@ -10,5 +10,4 @@ namespace HalHelper
 
         public string Rel { get; set; }
     }
-
 }
