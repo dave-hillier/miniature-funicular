@@ -91,6 +91,7 @@ namespace Issues.Controllers
         
         [Authorize("write:issues")]
         [HttpPost("/resource")]
+        [Consumes("application/json")]
         public async Task<ActionResult> Create([FromBody]Issue resource)
         {
             resource.Tenant = _tenantAccessor.Current;
@@ -102,6 +103,7 @@ namespace Issues.Controllers
         
         [Authorize("write:issues")]
         [HttpPost("{id}/images")]
+        [Consumes("application/json")]
         public async Task<ActionResult> AddImage(string id, [FromBody]string imageUrl)
         {
             var issue = await _applicationDbContext.Issues.FindAsync(id);
@@ -133,6 +135,7 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpPut("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> Update(string id, [FromBody]Issue resource)
         {            
             var issue = await _applicationDbContext.Issues.FindAsync(id);
@@ -150,6 +153,7 @@ namespace Issues.Controllers
 
         [Authorize("write:issues")]
         [HttpPatch("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]Issue resource)
         {
             var issue = await _applicationDbContext.Issues.FindAsync(id);

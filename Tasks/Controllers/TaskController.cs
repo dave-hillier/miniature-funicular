@@ -36,6 +36,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost("{parentId}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> CreateSubTask(string parentId, [FromBody] TaskModel resource)
         {            
             var parentTask = await _applicationDbContext.Tasks.FindAsync(parentId);
@@ -50,6 +51,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> Update(string id, [FromBody]TaskModel resource)
         {
             var task = await _applicationDbContext.Tasks.FindAsync(id); 
@@ -65,6 +67,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskModel resource)
         {
             var task = await _applicationDbContext.Tasks.FindAsync(id); 

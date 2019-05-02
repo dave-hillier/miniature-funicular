@@ -62,6 +62,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost]
+        [Consumes("application/json")]
         public async Task<ActionResult> CreateList([FromBody] TaskList resource)
         {
             resource.Tenant = _tenantAccessor.Current;
@@ -72,6 +73,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPost("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> AddNewTaskToList(string id, [FromBody] TaskModel resource)
         {
             var list = await GetLists().FirstOrDefaultAsync(l => l.Id == id);
@@ -89,6 +91,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPut("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> UpdateList(string id, [FromBody]TaskList resource)
         {
             var taskList = await _applicationDbContext.List.FindAsync(id); 
@@ -103,6 +106,7 @@ namespace Tasks.Controllers
 
         [Authorize("write:tasks")]
         [HttpPatch("{id}")]
+        [Consumes("application/json")]
         public async Task<ActionResult> UpdatePatch(string id, [FromBody]TaskList resource)
         {
             var taskList = await _applicationDbContext.List.FindAsync(id); 
