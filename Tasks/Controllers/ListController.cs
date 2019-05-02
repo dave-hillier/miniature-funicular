@@ -28,6 +28,7 @@ namespace Tasks.Controllers
         
         [Authorize("read:tasks")]
         [HttpGet]
+        [Produces("application/hal+json")]
         public ActionResult<Resource> List()
         {
             var lists = GetLists()
@@ -49,6 +50,7 @@ namespace Tasks.Controllers
 
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> Get(string id)
         {
             var list = await GetLists().FirstOrDefaultAsync(l => l.Id == id);

@@ -21,6 +21,7 @@ namespace Users.Controllers
         
         [Authorize("read:users")]
         [HttpGet]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> ListGroups()
         {
             var groupResources = _dbContext.Groups.Select(group => new Resource($"/api/groups/{group.Id}")
@@ -33,6 +34,7 @@ namespace Users.Controllers
 
         [Authorize("read:users")]
         [HttpGet("{id}")]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> Get(string id)
         {
             var group = await _dbContext.Groups.FindAsync(id);

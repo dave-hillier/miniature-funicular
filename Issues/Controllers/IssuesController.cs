@@ -30,6 +30,7 @@ namespace Issues.Controllers
         
         [Authorize("read:issues")]
         [HttpGet]
+        [Produces("application/hal+json")] // TODO: mark the rest
         public async Task<ActionResult<Resource>> GetAllIssues()
         { 
             var issues = await _applicationDbContext.Issues
@@ -54,6 +55,7 @@ namespace Issues.Controllers
 
         [Authorize("read:issues")]
         [HttpGet("{id}")]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> Get(string id)
         {
             var issues = await _applicationDbContext.Issues

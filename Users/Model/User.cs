@@ -22,7 +22,7 @@ namespace Users.Model
         
         // Not on end user model - usually equivalent to group, sometimes site
         [JsonIgnore]
-        [MaxLength(20)]
+        [MaxLength(64)]
         public string Tenant { get; set; } 
               
         [JsonIgnore]

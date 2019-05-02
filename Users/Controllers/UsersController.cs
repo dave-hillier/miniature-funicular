@@ -24,36 +24,39 @@ namespace Users.Controllers
 
         [Authorize("read:users")]
         [HttpGet]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> ListForTenant()
         {
             var users = Users.Select(u => CreateUser(u));
             var userResources = await users.ToListAsync();
-            
+
             var response = new Resource("/api/users")
                 .AddEmbedded("data", userResources)
-                .AddLink("current", "/api/users/@me"); 
-            
+                .AddLink("current", "/api/users/@me");
+
             return Ok(response);
         }
 
         [Authorize("read:users")]
         [HttpGet("@me")]
+        [Produces("application/hal+json")]
         public async Task<ActionResult> GetMe()
         {
             var name = _usernameAccessor.Current;
-            
+
             var currentUser = await Users.SingleOrDefaultAsync(u => u.Username == name);
             if (currentUser == null)
                 return BadRequest();
-            
-            return Redirect($"/api/users/{currentUser.Id}"); 
+
+            return Redirect($"/api/users/{currentUser.Id}");
         }
 
         [Authorize("read:users")]
         [HttpGet("{id}")]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> Get(string id)
         {
-            var user = await Users.SingleOrDefaultAsync(u => u.Id == id); 
+            var user = await Users.SingleOrDefaultAsync(u => u.Id == id);
             if (user == null)
                 return NotFound();
             return new OkObjectResult(CreateUser(user));
@@ -61,19 +64,20 @@ namespace Users.Controllers
 
         private IQueryable<User> Users
         {
-            get {
+            get
+            {
                 return _dbContext.Users
                     .Include(u => u.UserGroups)
                     .ThenInclude(post => post.Group);
             }
         }
-        
+
 
         private static Resource CreateUser(User user)
         {
             var userResource = new Resource($"/api/users/{user.Id.ToLowerInvariant()}") { State = user };
-            var userGroupResources = user.UserGroups.Select(CreateUserGroupResource).ToList();            
-            userResource.AddEmbedded("groups", userGroupResources);           
+            var userGroupResources = user.UserGroups.Select(CreateUserGroupResource).ToList();
+            userResource.AddEmbedded("groups", userGroupResources);
             return userResource;
         }
 

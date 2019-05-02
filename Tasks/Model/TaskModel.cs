@@ -10,9 +10,9 @@ namespace Tasks.Model
         [JsonIgnore]
         public string Id { get; set; }
                
-        [MaxLength(20)]
+        [MaxLength(64)]
         [JsonIgnore]
-        public string Tenant { get; set; }
+        public string Tenant { get; set; } // Consider removing this and only honouring the parent task list
         
         public string Title { get; set; }
 

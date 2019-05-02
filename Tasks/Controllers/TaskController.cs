@@ -24,6 +24,7 @@ namespace Tasks.Controllers
         
         [Authorize("read:tasks")]
         [HttpGet("{id}")]
+        [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> Get(string id)
         {
             var task = await _applicationDbContext.Tasks
