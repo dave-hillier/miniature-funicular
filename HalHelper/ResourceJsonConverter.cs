@@ -6,12 +6,12 @@ using Newtonsoft.Json.Serialization;
 
 namespace HalHelper
 {
-    public class ResourceConverter : JsonConverter
+    public class ResourceJsonConverter : JsonConverter
     {
         private class Inner
         {
             [JsonProperty(PropertyName = "_links")]
-            public Dictionary<string, Link> Links { get; set; }
+            public Dictionary<string, object> Links { get; set; }
     
             [JsonProperty(PropertyName = "_embedded")]
             public Dictionary<string, List<Resource>> Embedded { get; set; }
@@ -35,7 +35,8 @@ namespace HalHelper
                 var obj2 = JObject.FromObject(state, serializer);
                 if (obj2 != null)
                 {
-                    inner.Merge(obj2);
+                    obj2.Merge(inner);
+                    inner = obj2;
                 }                
             }                       
             inner.WriteTo(writer);

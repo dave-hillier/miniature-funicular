@@ -26,7 +26,7 @@ namespace HalHelper.Tests
 
             var result = JsonConvert.SerializeObject(s, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             
-            Assert.Equal("{\"_links\":{\"self\":{\"Href\":\"/self\"}},\"Hello\":\"world\"}", result);
+            Assert.Equal("{\"Hello\":\"world\",\"_links\":{\"self\":{\"Href\":\"/self\"}}}", result);
         }
         
         [Fact]
@@ -39,7 +39,7 @@ namespace HalHelper.Tests
 
             var result = JsonConvert.SerializeObject(s1, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
-            Assert.Equal("{\"_links\":{\"self\":{\"Href\":\"/s1\"}},\"_embedded\":{\"more\":[{\"_links\":{\"self\":{\"Href\":\"/s2\"}},\"Inside\":\"here\"}]}}", result);
+            Assert.Equal("{\"_links\":{\"self\":{\"Href\":\"/s1\"}},\"_embedded\":{\"more\":[{\"Inside\":\"here\",\"_links\":{\"self\":{\"Href\":\"/s2\"}}}]}}", result);
         }
     }
 }

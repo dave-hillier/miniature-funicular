@@ -8,6 +8,5 @@ namespace HalHelper
 
         public string Method { get; set; }
 
-        public string Rel { get; set; }
     }
 }

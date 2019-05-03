@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Properties.Model
 {
-    class PropertyThing
+    public class Property
     {              
         [JsonIgnore]
         public string Id { get; set; }

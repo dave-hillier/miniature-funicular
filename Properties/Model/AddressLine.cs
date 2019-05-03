@@ -1,11 +1,13 @@
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace Properties.Model
 {
-    class AddressLine
+    [Owned]
+    public class AddressLine
     {
         [JsonIgnore]
-        public int ParentId { get; set; } // TODO: composite key
+        public int ParentId { get; set; } 
         
         [JsonIgnore]
         public int LineNo { get; set; }

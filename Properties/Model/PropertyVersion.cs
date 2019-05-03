@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Properties.Model
 {
-    class PropertyVersion
+    public class PropertyVersion
     {
         [JsonIgnore]
         public string Id { get; set; }
@@ -17,21 +17,25 @@ namespace Properties.Model
 
         public DateTime Updated { get; set; }
         
-        public LocalizableContent Name { get; set; }
+        public Translations Name { get; set; }
 
-        public LocalizableContent Description { get; set; }
+        public Translations Description { get; set; }
         
-        public Address Address { get; set; }
+        public string Category { get; set; } // TODO: does this need to be a lookup table?
+
+        [JsonIgnore]
+        public List<ImageLink> Images { get; set; }
         
-        public PhoneInfo PhoneInfo { get; set; }
-
-        public string Category { get; set; }
-
-        public List<PropertyImage> Images { get; set; }
-
-        // TODO: management info, company, address
-        public ManagementInfo ManagementInfo { get; set; }
+        public List<ContactInfo> ContactInfos { get; set; }
         
+        [JsonIgnore]
+        public List<Room> Rooms { get; set; }
+        
+        [JsonIgnore]
+        public List<RoomType> RoomTypes { get; set; }
+        
+        // policies
+        // check in-out times
         // GPS Coordinates?
     }
 }

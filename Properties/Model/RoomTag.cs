@@ -1,12 +1,10 @@
-using Newtonsoft.Json;
-
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 namespace Properties.Model
 {
-    class RoomTag
-    {
-        [JsonIgnore]
-        public int Id { get; set; }
-        
+    [Owned]
+    public class RoomTag
+    {              
         public string Tag { get; set; }       
     }
 }
