@@ -167,7 +167,10 @@ namespace Properties.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             dynamic responseObject = JObject.Parse(responseBody);
-            Assert.Equal("/api/properties/current/Tenant", responseObject._links.self.href);
+            
+            Assert.Equal("/api/properties/current/Tenant", responseObject._links.self.href.ToString());
+            Assert.Equal("English: name", responseObject._embedded.properties[0].name.en.ToString());
+            Assert.Equal("French: name", responseObject._embedded.properties[0].name.fr.ToString());
         }
     }
 }
