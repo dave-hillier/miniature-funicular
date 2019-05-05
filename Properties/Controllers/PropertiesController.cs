@@ -18,57 +18,52 @@ namespace Properties.Controllers
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly ITenantAccessor _tenantAccessor;
-        private readonly IFileStorage _fileStorage;
 
-        public PropertiesController(ApplicationDbContext applicationDbContext,
-            ITenantAccessor tenantAccessor,
-            IFileStorage fileStorage)
+        public PropertiesController(
+            ApplicationDbContext applicationDbContext,
+            ITenantAccessor tenantAccessor)
         {
             _applicationDbContext = applicationDbContext;
             _tenantAccessor = tenantAccessor;
-            _fileStorage = fileStorage;
         }
 
-        /*
-        [HttpPost]
-        [Authorize("create:property")]
-        [Consumes("application/json")]
-        public async Task<ActionResult> CreateProperty([FromBody]PropertyRequest body)
-        {
-            var tenant = _tenantAccessor.Current;
-            // TODO: 
-            return Created("/", new {});
-        }
-        
-        [HttpPut("{thing}")]
+        [HttpPost("{tenant}/{version}/roomTypes")]
         [Authorize("update:property")]
         [Consumes("application/json")]
-        public async Task<ActionResult> UpdateProperty(string thing, [FromBody]PropertyRequest body)
+        public async Task<ActionResult> AddRoomType(string tenant, string version, [FromBody]string body) // TODO: more stuff
         {
-            var tenant = _tenantAccessor.Current;
-            // TODO: 
-            return Ok();
-        }
+            if (tenant != _tenantAccessor.Current)
+                return Unauthorized();
 
-        [HttpPatch("{thing}")]
-        [Authorize("update:property")]
-        [Consumes("application/json")]
-        public async Task<ActionResult> PatchProperty(string thing, [FromBody]PropertyRequest body)
-        {
-            var tenant = _tenantAccessor.Current;
-            // TODO: 
-            return Ok();
+            var propertyVersions = GetQueryablePropertyVersion(tenant, version);
+            if (propertyVersions == null)
+                return NotFound();
+
+            var roomType = new RoomType();
+            _applicationDbContext.RoomTypes.Add(roomType);
+            await _applicationDbContext.SaveChangesAsync();
+            
+            return Created($"/api/roomTypes/{roomType.Id}", new {});
         }
         
-        [HttpDelete("{thing}")]
-        [Authorize("delete:property")] 
+        [HttpPost("{tenant}/{version}/rooms")]
+        [Authorize("update:property")]
         [Consumes("application/json")]
-        public async Task<ActionResult> DeleteProperty(string thing, [FromBody]PropertyRequest body)
+        public async Task<ActionResult> AddRooms(string tenant, string version, [FromBody]string body) // TODO: more stuff
         {
-            var tenant = _tenantAccessor.Current;
-            // TODO: 
-            return Ok();
-        }*/
+            if (tenant != _tenantAccessor.Current)
+                return Unauthorized();
+
+            var propertyVersions = GetQueryablePropertyVersion(tenant, version);
+            if (propertyVersions == null)
+                return NotFound();
+
+            var room = new Room();
+            _applicationDbContext.Rooms.Add(room);
+            await _applicationDbContext.SaveChangesAsync();
+            
+            return Created($"/api/rooms/{room.Id}", new {});
+        }
 
         // Lookup the hotels for a given tenant
         [HttpGet("current/{tenant}")]
@@ -98,7 +93,7 @@ namespace Properties.Controllers
         [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> GetProperty(string tenant, string id)
         {
-            var property = await GetQueryableVersion(tenant, id)
+            var property = await GetQueryablePropertyVersion(tenant, id)
                 .SingleOrDefaultAsync();
             
             if (property == null)
@@ -120,7 +115,7 @@ namespace Properties.Controllers
                 .AddEmbedded("roomsTypes", propertyVersion.RoomTypes.Select(ResourceExtensions.ToResource).ToList());
         }
 
-        private IQueryable<PropertyVersion> GetQueryableVersion(string tenant, string version)
+        private IQueryable<PropertyVersion> GetQueryablePropertyVersion(string tenant, string version)
         {
             return _applicationDbContext.PropertyVersion
                     .Where(p => p.Tenant == tenant && p.Id == version)

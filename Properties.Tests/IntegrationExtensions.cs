@@ -59,7 +59,6 @@ namespace Properties.Tests
                 {
                     services.ConfigureInMemoryDatabases(inMemoryDatabaseRoot);
                     services.ConfigureUnvalidatedAuth();
-                    services.AddSingleton<IFileStorage, FakeStorage>();
                 })
                 .ConfigureLogging(logging =>
                 {
@@ -67,19 +66,6 @@ namespace Properties.Tests
                     logging.AddConsole();
                 })
                 .UseStartup<Startup>();
-        }
-    }
-
-    internal class FakeStorage : IFileStorage
-    {
-        public Task<string> StoreAsync(string tenant, IFormFile file)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<bool> ExistsAsync()
-        {
-            return Task.FromResult(true);
         }
     }
 }

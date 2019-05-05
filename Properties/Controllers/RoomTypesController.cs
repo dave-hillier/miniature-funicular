@@ -18,13 +18,13 @@ namespace Properties.Controllers
         
         [HttpGet("{id}")]
         [Produces("application/hal+json")]
-        public async Task<ActionResult<Resource>> GetProperty(int id)
+        public async Task<ActionResult<Resource>> GetRoomTypes(int id)
         {
-            var roomTypes = await _dbContext.Rooms.FindAsync(id);
+            var roomTypes = await _dbContext.RoomTypes.FindAsync(id);
             if (roomTypes == null)
                 return NotFound();
             
-            return Ok();
+            return Ok(roomTypes.ToResource());
         }
     }
 }

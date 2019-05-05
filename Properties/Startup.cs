@@ -37,8 +37,7 @@ namespace Properties
               .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services
-                .AddHealthChecks()
-                .AddCheck<FileStorageHealthCheck>("BlobStore");
+                .AddHealthChecks();
             services.AddHttpContextAccessor();
 
 
@@ -60,7 +59,7 @@ namespace Properties
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies("read:properties", "write:properties");
+                options.AddScopePolicies("read:properties", "update:properties", "create:property", "delete:property");
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -68,7 +67,6 @@ namespace Properties
 
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
             services.TryAddScoped<ITenantAccessor, TenantAccessor>();
-            services.TryAddSingleton<IFileStorage, BlobFileStorage>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
