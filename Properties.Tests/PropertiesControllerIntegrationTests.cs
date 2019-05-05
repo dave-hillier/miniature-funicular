@@ -33,6 +33,7 @@ namespace Properties.Tests
 
         private void Seed(ApplicationDbContext context)
         {
+            var id = "hotelid";
             var subRoomType = new RoomType
             {
                 Name = CreateTranslations("Sub Room Type Name"),
@@ -79,6 +80,7 @@ namespace Properties.Tests
 
             var propertyVersion = new PropertyVersion
             {
+                Id = id,
                 Name = CreateTranslations("name"),
                 Description = CreateTranslations("description"),
                 Tenant = "Tenant",
@@ -158,7 +160,7 @@ namespace Properties.Tests
         }
 
         [Fact]
-        public async void Test()
+        public async void GetCurrentTenantsProperties()
         {
             var response = await _testClient.GetAsync("api/properties/current/Tenant");
 
@@ -169,8 +171,23 @@ namespace Properties.Tests
             dynamic responseObject = JObject.Parse(responseBody);
             
             Assert.Equal("/api/properties/current/Tenant", responseObject._links.self.href.ToString());
-            Assert.Equal("English: name", responseObject._embedded.properties[0].name.en.ToString());
-            Assert.Equal("French: name", responseObject._embedded.properties[0].name.fr.ToString());
+            
+        }
+        
+        [Fact]
+        public async void GetProperty()
+        {
+            var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
+            var responseBody = await propertyList.Content.ReadAsStringAsync();
+
+            dynamic responseObject = JObject.Parse(responseBody);
+            var propertyUrl = responseObject._links.properties[0].href.ToString();
+
+            var propertyResponse = await _testClient.GetAsync(propertyUrl);
+            var propertyResponseBody = await propertyResponse.Content.ReadAsStringAsync();
+            dynamic property = JObject.Parse(propertyResponseBody);
+            
+            Assert.Equal("English: name", property.name.en.ToString());
         }
     }
 }

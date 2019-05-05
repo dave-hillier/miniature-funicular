@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
@@ -28,7 +29,8 @@ namespace Properties.Controllers
             _fileStorage = fileStorage;
         }
 
-        /*[HttpPost]
+        /*
+        [HttpPost]
         [Authorize("create:property")]
         [Consumes("application/json")]
         public async Task<ActionResult> CreateProperty([FromBody]PropertyRequest body)
@@ -68,132 +70,68 @@ namespace Properties.Controllers
             return Ok();
         }*/
 
+        // Lookup the hotels for a given tenant
         [HttpGet("current/{tenant}")]
         [Produces("application/hal+json")]
         public async Task<ActionResult<Resource>> GetLatestVersionProperties(string tenant)
         {
-            var properties = await GetQueryable(tenant)
+            var properties = await _applicationDbContext.Properties
+                .Include(p => p.Current)
+                .Where(p => p.Tenant == tenant)
                 .ToListAsync();
 
             if (!properties.Any())
                 return NotFound();
 
-            var resources = properties
-                .Select(ToResource)
-                .ToList();
+            var urls = properties
+                .Select(p => new Link { Href =$"/api/properties/{p.Tenant}/{p.Current.Id}" })
+                .ToArray();
 
             var resource = new Resource($"/api/properties/current/{tenant}")
-                .AddEmbedded("properties", resources);
+                .AddLinks("properties", urls);
 
             return Ok(resource);
         }
 
-        private Resource ToResource(Property property)
+        // Get property
+        [HttpGet("{tenant}/{id}")]
+        [Produces("application/hal+json")]
+        public async Task<ActionResult<Resource>> GetProperty(string tenant, string id)
         {
-            var imageLinks = property.Current.Images.Select(l => new Link
-            {
-                Href = l.Href,
-            }).ToArray();
+            var property = await GetQueryableVersion(tenant, id)
+                .SingleOrDefaultAsync();
+            
+            if (property == null)
+                return NotFound();
 
-            return new Resource($"/api/properties/current/{property.Tenant}/{property.Id}")
-                {
-                    State = property.Current,
-                }
-                .AddLinks("images", imageLinks)
-                .AddEmbedded("rooms", property.Current.Rooms.Select(ToResource).ToList())
-                .AddEmbedded("roomsTypes", property.Current.RoomTypes.Select(ToResource).ToList());
-        }
-
-        private static Resource ToResource(Room room)
-        {
-            return new Resource($"/api/rooms/{room.Id}")
-            {
-                State = room
-            }.AddLink("roomType", $"/api/roomTypes/{room.RoomTypeId}");
+            return Ok(ToResource(property));
         }
         
-        private Resource ToResource(RoomType roomType)
+        private static Resource ToResource(PropertyVersion propertyVersion)
         {
-            var images = roomType.Images.Select(l => new Link {  Href = l.Href  }).ToList();
-            var resources = roomType.SubRooms.Select(ToResource).ToList(); // TODO: Actually query for them
+            var imageLinks = propertyVersion.Images.Select(l => new Link { Href = l.Href }).ToArray();
 
-            
-            return new Resource($"/api/roomTypes/{roomType.Id}") 
-                { 
-                    State = new
-                    {
-                        roomType.Name,
-                        roomType.Description,
-                        roomType.Amenities,
-                        Tags = roomType.Tags.Select(t => t.Tag).ToList(),
-                    }
+            return new Resource($"/api/properties/{propertyVersion.Tenant}/{propertyVersion.Id}")
+                {
+                    State = propertyVersion,
                 }
-                .AddLinks("images", images.ToArray())
-                .AddEmbedded("subRooms", resources);
+                .AddLinks("images", imageLinks)
+                .AddEmbedded("rooms", propertyVersion.Rooms.Select(ResourceExtensions.ToResourceX).ToList())
+                .AddEmbedded("roomsTypes", propertyVersion.RoomTypes.Select(ResourceExtensions.ToResource).ToList());
         }
 
-
-        /*[HttpGet("current/{tenant}/{id}")]
-        [Produces("application/hal+json")]
-        public async Task<ActionResult<Resource>> GetCurrentVersionProperty(string tenant, string id) 
-        {
-            var property = await GetQueryable(tenant)
-                .SingleOrDefaultAsync(p => p.Id == id);
-            
-            if (property == null)
-                return NotFound();
-            
-            var resource = new Resource($"/api/properties/current/{tenant}/{property.Id}");
-            
-            return Ok(resource);
-        }
-
-                
-        [HttpGet("version/{version}")]
-        [Produces("application/hal+json")] 
-        public async Task<ActionResult<Resource>> GetProperty(string version)
-        {
-            var property = await GetQueryableVersion(version)
-                .FirstOrDefaultAsync();            
-                     
-            if (property == null)
-                return NotFound();
-
-            var resource = new Resource($"/api/properties/version/{property.Id}")
-            {
-               State = property
-            };
-            
-            return Ok(resource);
-        }*/
-
-        private IQueryable<PropertyVersion> GetQueryableVersion(string version)
+        private IQueryable<PropertyVersion> GetQueryableVersion(string tenant, string version)
         {
             return _applicationDbContext.PropertyVersion
-                .Include(pv => pv.Name)
-                .Include(pv => pv.Description)
-                .Include(pv => pv.Rooms).ThenInclude(rt => rt.Name)
-                .Include(pv => pv.Rooms).ThenInclude(rt => rt.Description)
-                .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Name)
-                .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Description)
-                .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Amenities)
-                .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.SubRooms).ThenInclude(rt => rt.SubRooms)                    
-                .Where(p => p.Id == version);
+                    .Where(p => p.Tenant == tenant && p.Id == version)
+                    .Include(pv => pv.Name)
+                    .Include(pv => pv.Description)
+                    .Include(pv => pv.Rooms).ThenInclude(rt => rt.Name)
+                    .Include(pv => pv.Rooms).ThenInclude(rt => rt.Description)
+                    .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Name)
+                    .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Description)
+                    .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Amenities)
+                    .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.SubRooms).ThenInclude(rt => rt.SubRooms);
         }
-
-        private IQueryable<Property> GetQueryable(string tenant)
-        {
-            return _applicationDbContext.Properties
-                .Include(p => p.Current).ThenInclude(pv => pv.Name)
-                .Include(p => p.Current).ThenInclude(pv => pv.Description)
-                .Include(p => p.Current).ThenInclude(pv => pv.Rooms).ThenInclude(rt => rt.Name)
-                .Include(p => p.Current).ThenInclude(pv => pv.Rooms).ThenInclude(rt => rt.Description)
-                .Include(p => p.Current).ThenInclude(pv => pv.RoomTypes).ThenInclude(rt => rt.Name)
-                .Include(p => p.Current).ThenInclude(pv => pv.RoomTypes).ThenInclude(rt => rt.Description)
-                .Include(p => p.Current).ThenInclude(pv => pv.RoomTypes).ThenInclude(rt => rt.Amenities)
-                .Include(p => p.Current).ThenInclude(pv => pv.RoomTypes).ThenInclude(rt => rt.SubRooms).ThenInclude(rt => rt.SubRooms) // TODO: encapsulate room includes
-                .Where(p => p.Tenant == tenant);
-        }
-
     }
 }
