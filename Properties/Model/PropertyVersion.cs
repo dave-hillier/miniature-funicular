@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Sockets;
 using Newtonsoft.Json;
+using Properties.Converters;
 
 namespace Properties.Model
 {
+    [JsonConverter(typeof(PropertyVersionJsonConverter))]
     public class PropertyVersion
     {
-        [JsonIgnore]
-        public string Id { get; set; }
+        [Key]
+        public string Version { get; set; }
         
         [MaxLength(64)]
-        [JsonIgnore]
         public string Tenant { get; set; }
 
         public DateTime Updated { get; set; }
@@ -23,15 +24,12 @@ namespace Properties.Model
         
         public string Category { get; set; } // TODO: does this need to be a lookup table?
 
-        [JsonIgnore]
         public List<ImageLink> Images { get; set; }
         
         public List<ContactInfo> ContactInfos { get; set; }
         
-        [JsonIgnore]
         public List<Room> Rooms { get; set; }
         
-        [JsonIgnore]
         public List<RoomType> RoomTypes { get; set; }
         
         // policies

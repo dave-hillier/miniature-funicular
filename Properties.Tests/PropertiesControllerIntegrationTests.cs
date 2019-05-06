@@ -4,7 +4,6 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Properties.Model;
@@ -80,7 +79,7 @@ namespace Properties.Tests
 
             var propertyVersion = new PropertyVersion
             {
-                Id = id,
+                Version = id,
                 Name = CreateTranslations("name"),
                 Description = CreateTranslations("description"),
                 Tenant = "Tenant",
@@ -181,10 +180,30 @@ namespace Properties.Tests
             var responseBody = await propertyList.Content.ReadAsStringAsync();
 
             dynamic responseObject = JObject.Parse(responseBody);
-            var propertyUrl = responseObject._links.properties[0].href.ToString();
+            var propertyUrl = responseObject._embedded.properties[0]._links.self.href.ToString();
 
             var propertyResponse = await _testClient.GetAsync(propertyUrl);
+            
+            Assert.Equal(HttpStatusCode.Redirect, propertyResponse.StatusCode);
+            
+            Assert.Equal("/api/properties/versions/Tenant/hotelid", propertyResponse.Headers.Location.ToString());
+        }
+        
+        [Fact]
+        public async void GetPropertyDirect()
+        {
+            var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
+            var responseBody = await propertyList.Content.ReadAsStringAsync();
+
+            dynamic responseObject = JObject.Parse(responseBody);
+            var propertyUrl = responseObject._embedded.properties[0]._links.direct.href.ToString();
+
+            var propertyResponse = await _testClient.GetAsync(propertyUrl);
+            
+            Assert.Equal(HttpStatusCode.OK, propertyResponse.StatusCode);
+            
             var propertyResponseBody = await propertyResponse.Content.ReadAsStringAsync();
+            
             dynamic property = JObject.Parse(propertyResponseBody);
             
             Assert.Equal("English: name", property.name.en.ToString());

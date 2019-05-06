@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Properties.Converters;
 
 namespace Properties.Model
 {
+    [JsonConverter(typeof(RoomTypeJsonConverter))]
     public class RoomType
     {
         public string Id { get; set; }

@@ -24,7 +24,7 @@ namespace Properties.Controllers
             if (rooms == null)
                 return NotFound();
 
-            return Ok(rooms.ToResourceX());
+            return Ok(rooms.ToResource());
         }
     }
 }

@@ -59,7 +59,8 @@ namespace Properties
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies("read:properties", "update:properties", "create:property", "delete:property");
+                options.AddScopePolicies("read:properties", 
+                    "update:properties", "update:property", "create:property", "delete:property");
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>

@@ -26,8 +26,6 @@ namespace HalHelper
                 Links = resource.Links.Count > 0 ? resource.Links : null,
                 Embedded = resource.Embedded.Count > 0 ? resource.Embedded : null
             }, serializer);
-
-
             
             var state = resource.State;
             if (state != null)

@@ -2,9 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
+using Properties.Converters;
 
 namespace Properties.Model
 {
+    [JsonConverter(typeof(RoomJsonConverter))]
     public class Room
     {
         [JsonIgnore]
@@ -19,8 +21,8 @@ namespace Properties.Model
         [JsonIgnore]
         public string RoomTypeId { get; set; }
         
-        [JsonIgnore]
         [ForeignKey("RoomTypeId")]
+        [JsonIgnore]
         public RoomType RoomType { get; set; }
     }
 }
