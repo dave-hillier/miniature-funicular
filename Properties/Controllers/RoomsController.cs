@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using HalHelper;
 using Microsoft.AspNetCore.Mvc;
 using Properties.Model;
 
@@ -18,13 +17,13 @@ namespace Properties.Controllers
         
         [HttpGet("{id}")]
         [Produces("application/hal+json")]
-        public async Task<ActionResult<Resource>> GetRooms(int id)
+        public async Task<ActionResult> GetRooms(int id)
         {
             var rooms = await _dbContext.Rooms.FindAsync(id);
             if (rooms == null)
                 return NotFound();
 
-            return Ok(rooms.ToResource());
+            return Ok(rooms);
         }
     }
 }

@@ -32,7 +32,6 @@ namespace Properties.Tests
 
         private void Seed(ApplicationDbContext context)
         {
-            var id = "hotelid";
             var subRoomType = new RoomType
             {
                 Name = CreateTranslations("Sub Room Type Name"),
@@ -79,7 +78,7 @@ namespace Properties.Tests
 
             var propertyVersion = new PropertyVersion
             {
-                Version = id,
+                Version = "PropertyVersion",
                 Name = CreateTranslations("name"),
                 Description = CreateTranslations("description"),
                 Tenant = "Tenant",
@@ -137,7 +136,8 @@ namespace Properties.Tests
             var property = new Property()
             {
                 Tenant = "Tenant",
-                Current = propertyVersion
+                Current = propertyVersion,
+                Id = "PropertyId"
             };
 
             context.Properties.Add(property);
@@ -186,7 +186,7 @@ namespace Properties.Tests
             
             Assert.Equal(HttpStatusCode.Redirect, propertyResponse.StatusCode);
             
-            Assert.Equal("/api/properties/versions/Tenant/hotelid", propertyResponse.Headers.Location.ToString());
+            Assert.Equal("/api/properties/versions/Tenant/PropertyVersion", propertyResponse.Headers.Location.ToString());
         }
         
         [Fact]
@@ -207,6 +207,81 @@ namespace Properties.Tests
             dynamic property = JObject.Parse(propertyResponseBody);
             
             Assert.Equal("English: name", property.name.en.ToString());
+        }
+        
+                
+        [Fact]
+        public async void CreateProperty()
+        {
+            var payload = new
+            {
+                Name = new
+                {
+                    en = "Name"
+                }
+            };
+            var request = HttpClientHelper.CreateJsonRequest("/api/properties/", HttpMethod.Post, payload);
+            var response = await _testClient.SendAsync(request);
+            var newLocation = response.Headers.Location;
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            
+            Assert.Matches("/api/properties/.*", newLocation.ToString());
+            var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
+            
+            Assert.Equal(HttpStatusCode.OK, propertyList.StatusCode);
+            
+            var newProperty = await _testClient.GetAsync(newLocation);
+            Assert.Equal(HttpStatusCode.Found, newProperty.StatusCode);
+            
+            var newPropertyResponse = await _testClient.GetAsync(newProperty.Headers.Location);
+            
+            Assert.Equal(HttpStatusCode.OK, newPropertyResponse.StatusCode);
+            var newPropertyResponseBody = await newPropertyResponse.Content.ReadAsStringAsync();
+            
+            dynamic responseObject = JObject.Parse(newPropertyResponseBody);
+            
+            Assert.Equal("Name", responseObject.name.en.ToString());
+        }
+        
+        [Fact]
+        public async void UpdateProperty()
+        {
+            var payload = new
+            {
+                Name = new
+                {
+                    en = "New Name"
+                }
+            };
+            var request = HttpClientHelper.CreateJsonRequest("api/properties/current/Tenant/PropertyId", HttpMethod.Put, payload);
+            var response = await _testClient.SendAsync(request);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
+
+            var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
+            
+            Assert.Equal(HttpStatusCode.OK, propertyList.StatusCode);
+            var propertyListBody = await propertyList.Content.ReadAsStringAsync();
+            
+            dynamic responseObject = JObject.Parse(propertyListBody);
+
+            var link = responseObject._embedded.properties[0]._links.direct.href.ToString();
+            Assert.NotEqual("/api/properties/versions/Tenant/PropertyVersion", link);
+        }
+        
+        
+        [Fact]
+        public async void Delete()
+        {
+            var request = HttpClientHelper.CreateJsonRequest("api/properties/current/Tenant/PropertyId", HttpMethod.Delete, new {});
+            var response = await _testClient.SendAsync(request);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
+
+            var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
+            
+            Assert.Equal(HttpStatusCode.NotFound, propertyList.StatusCode);
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;

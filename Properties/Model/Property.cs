@@ -1,5 +1,3 @@
-using System;
-using System.Net.Mime;
 using Newtonsoft.Json;
 
 namespace Properties.Model

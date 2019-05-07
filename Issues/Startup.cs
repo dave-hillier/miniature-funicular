@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Issues.Model;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ScopeClaim;
 
 namespace Issues

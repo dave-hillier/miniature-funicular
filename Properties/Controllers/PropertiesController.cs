@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using HalHelper;
 using Microsoft.AspNetCore.Authorization;
@@ -23,11 +22,54 @@ namespace Properties.Controllers
             _applicationDbContext = applicationDbContext;
             _tenantAccessor = tenantAccessor;
         }
+        
+        [HttpPost]
+        [Authorize("create:property")]
+        [Consumes("application/json")]
+        public async Task<ActionResult> CreateProperty([FromBody]PropertyVersion body)
+        {
+            var tenant = _tenantAccessor.Current;
+            body.Tenant = tenant;
 
-        [HttpPost("/current/{tenant}/{id}/roomTypes")]
+            var property = new Property()
+            {
+                Current = body,
+                Tenant = tenant
+            };
+            _applicationDbContext.Properties.Add(property);
+            _applicationDbContext.PropertyVersion.Add(body);
+            
+            await _applicationDbContext.SaveChangesAsync();
+
+            return Created($"/api/properties/current/{tenant}/{property.Id}", new {});
+        }
+
+        [HttpPut("current/{tenant}/{id}")]
         [Authorize("update:property")]
         [Consumes("application/json")]
-        public async Task<ActionResult> AddRoomType(string tenant, string id, [FromBody]RoomType body)
+        public async Task<ActionResult> ReplaceProperty(string tenant, string id, [FromBody]PropertyVersion body)
+        {
+            if (tenant != _tenantAccessor.Current)
+                return Unauthorized();
+            
+            var property = await GetPropertyAsync(tenant, id);
+
+            if (property == null)
+                return NotFound();
+            
+            body.Tenant = tenant;
+            property.Current = body;
+
+            _applicationDbContext.PropertyVersion.Add(body);
+            await _applicationDbContext.SaveChangesAsync();
+
+            return Ok(); 
+        }
+
+        [HttpDelete("current/{tenant}/{id}")]
+        [Authorize("update:property")]
+        [Consumes("application/json")]
+        public async Task<ActionResult> DeleteProperty(string tenant, string id)
         {
             if (tenant != _tenantAccessor.Current)
                 return Unauthorized();
@@ -37,25 +79,12 @@ namespace Properties.Controllers
             if (property == null)
                 return NotFound();
 
-            _applicationDbContext.RoomTypes.Add(body);           
-
-            return Created($"/api/roomTypes/{body.Id}", new {});
-        }
-       
-        [HttpPost("current/{tenant}/{id}/{roomTypeId}/rooms")] // TODO: add roomtype?
-        [Authorize("update:property")]
-        [Consumes("application/json")]
-        public async Task<ActionResult> AddRooms(string tenant, string id, [FromBody]Room body) 
-        {
-            if (tenant != _tenantAccessor.Current)
-                return Unauthorized();
-
-
-            await _applicationDbContext.SaveChangesAsync();
+            _applicationDbContext.Properties.Remove(property); // Note: soft delete not required as we keep the version 
             
-            return Created($"/api/rooms/{body.Id}", new {}); // TODO
+            await _applicationDbContext.SaveChangesAsync();
+            return Ok(); 
         }
-
+        
         // Lookup the hotels for a given tenant
         [HttpGet("current/{tenant}")]
         [Produces("application/hal+json")]

@@ -1,7 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Properties.Model;
-using Microsoft.AspNetCore.Http;
 
 namespace Properties.Tests
 {

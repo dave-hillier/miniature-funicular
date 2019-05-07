@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Sockets;
 using Newtonsoft.Json;
 using Properties.Converters;
 

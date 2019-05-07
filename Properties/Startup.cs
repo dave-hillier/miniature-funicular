@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Properties.Model;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using ScopeClaim;
 
 [assembly:InternalsVisibleTo("Properties.Tests")]
@@ -59,7 +58,7 @@ namespace Properties
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies("read:properties", 
+                options.AddScopePolicies(
                     "update:properties", "update:property", "create:property", "delete:property");
             });
 

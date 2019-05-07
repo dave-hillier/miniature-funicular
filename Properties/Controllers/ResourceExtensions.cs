@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HalHelper;
-using Microsoft.IdentityModel.Xml;
 using Properties.Model;
 
 namespace Properties.Controllers

@@ -20,29 +20,18 @@ namespace Properties.Converters
 
             public List<string> Images { get; set; }
         
-            public List<ContactInfo> ContactInfos { get; set; }
+            public List<ContactInfo> ContactInfos { get; set; } 
         
             public List<Room> Rooms { get; set; }
         
-            public List<RoomType> RoomTypes { get; set; }
+            public List<RoomType> RoomTypes { get; set; } 
 
         }
         
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var propertyVersion = ((PropertyVersion) value);
-            var temp = JObject.FromObject(propertyVersion.ToResource());
-            /*var temp = JObject.FromObject(new InnerDto
-            {
-                Name = propertyVersion.Name,
-                Description = propertyVersion.Description,
-                Category = propertyVersion.Category,
-                ContactInfos = propertyVersion.ContactInfos,
-                Images = propertyVersion.Images.Select(i => i.Href).ToList(),
-                Rooms = propertyVersion.Rooms,
-                RoomTypes = propertyVersion.RoomTypes,
-            }, serializer);*/
- 
+            var temp = JObject.FromObject(propertyVersion.ToResource()); 
             temp.WriteTo(writer);
         }
 
@@ -55,7 +44,7 @@ namespace Properties.Converters
                 Description = temp.Description,
                 Category = temp.Category,
                 ContactInfos = temp.ContactInfos,
-                Images = temp.Images.Select((image, i) => new ImageLink { Href = image, SortValue = i}).ToList(),
+                Images = temp.Images?.Select((image, i) => new ImageLink { Href = image, SortValue = i}).ToList(),
                 Rooms = temp.Rooms,
                 RoomTypes = temp.RoomTypes
             };

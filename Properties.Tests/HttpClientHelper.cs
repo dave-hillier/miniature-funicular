@@ -27,7 +27,7 @@ namespace Properties.Tests
                 {"aud", "https://audience"},
                 {"iat", (DateTime.UtcNow - epoch).TotalSeconds},
                 {"exp", (DateTime.UtcNow.AddMinutes(1) - epoch).TotalSeconds},
-                {"scope", "read:users read:tasks read:properties write:tasks write:properties"}
+                {"scope", "update:properties update:property create:property delete:property"}
             };
 
             var token = new JwtSecurityToken(header, payload);
