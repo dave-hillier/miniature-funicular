@@ -10,17 +10,18 @@ namespace Properties.Model
     {
         [JsonIgnore]
         public int Id { get; set; }
-        
-        [Required]
+
+
+        //[Required] // Removed because of cascade
+
         public Translations Name { get; set; }
-        
-        [Required]
+
         public Translations Description { get; set; }
-        
+
         [JsonIgnore]
         [Required]
         public string RoomTypeId { get; set; }
-        
+
         [ForeignKey("RoomTypeId")]
         [JsonIgnore]
         public RoomType RoomType { get; set; }

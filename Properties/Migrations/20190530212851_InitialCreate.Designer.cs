@@ -10,7 +10,7 @@ using Properties.Model;
 namespace Properties.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190530211129_InitialCreate")]
+    [Migration("20190530212851_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,7 +66,7 @@ namespace Properties.Migrations
                         .IsRequired()
                         .HasMaxLength(64);
 
-                    b.Property<int>("DescriptionId");
+                    b.Property<int?>("DescriptionId");
 
                     b.Property<int>("NameId");
 
@@ -91,9 +91,9 @@ namespace Properties.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("DescriptionId");
+                    b.Property<int?>("DescriptionId");
 
-                    b.Property<int>("NameId");
+                    b.Property<int?>("NameId");
 
                     b.Property<string>("PropertyVersionVersion");
 
@@ -118,7 +118,7 @@ namespace Properties.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("DescriptionId");
+                    b.Property<int?>("DescriptionId");
 
                     b.Property<int>("NameId");
 
@@ -169,8 +169,7 @@ namespace Properties.Migrations
                 {
                     b.HasOne("Properties.Model.Translations", "Description")
                         .WithMany()
-                        .HasForeignKey("DescriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DescriptionId");
 
                     b.HasOne("Properties.Model.Translations", "Name")
                         .WithMany()
@@ -326,13 +325,11 @@ namespace Properties.Migrations
                 {
                     b.HasOne("Properties.Model.Translations", "Description")
                         .WithMany()
-                        .HasForeignKey("DescriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DescriptionId");
 
                     b.HasOne("Properties.Model.Translations", "Name")
                         .WithMany()
-                        .HasForeignKey("NameId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("NameId");
 
                     b.HasOne("Properties.Model.PropertyVersion")
                         .WithMany("Rooms")
@@ -348,8 +345,7 @@ namespace Properties.Migrations
                 {
                     b.HasOne("Properties.Model.Translations", "Description")
                         .WithMany()
-                        .HasForeignKey("DescriptionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DescriptionId");
 
                     b.HasOne("Properties.Model.Translations", "Name")
                         .WithMany()

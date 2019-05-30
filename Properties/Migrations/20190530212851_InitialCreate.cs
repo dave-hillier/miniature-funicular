@@ -47,7 +47,7 @@ namespace Properties.Migrations
                     Tenant = table.Column<string>(maxLength: 64, nullable: false),
                     Updated = table.Column<DateTime>(nullable: false),
                     NameId = table.Column<int>(nullable: false),
-                    DescriptionId = table.Column<int>(nullable: false),
+                    DescriptionId = table.Column<int>(nullable: true),
                     Category = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
@@ -58,7 +58,7 @@ namespace Properties.Migrations
                         column: x => x.DescriptionId,
                         principalTable: "Translations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PropertyVersion_Translations_NameId",
                         column: x => x.NameId,
@@ -138,7 +138,7 @@ namespace Properties.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     NameId = table.Column<int>(nullable: false),
-                    DescriptionId = table.Column<int>(nullable: false),
+                    DescriptionId = table.Column<int>(nullable: true),
                     PropertyVersionVersion = table.Column<string>(nullable: true),
                     RoomTypeId = table.Column<string>(nullable: true)
                 },
@@ -150,7 +150,7 @@ namespace Properties.Migrations
                         column: x => x.DescriptionId,
                         principalTable: "Translations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_RoomTypes_Translations_NameId",
                         column: x => x.NameId,
@@ -261,8 +261,8 @@ namespace Properties.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    NameId = table.Column<int>(nullable: false),
-                    DescriptionId = table.Column<int>(nullable: false),
+                    NameId = table.Column<int>(nullable: true),
+                    DescriptionId = table.Column<int>(nullable: true),
                     RoomTypeId = table.Column<string>(nullable: false),
                     PropertyVersionVersion = table.Column<string>(nullable: true)
                 },
@@ -274,13 +274,13 @@ namespace Properties.Migrations
                         column: x => x.DescriptionId,
                         principalTable: "Translations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Rooms_Translations_NameId",
                         column: x => x.NameId,
                         principalTable: "Translations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Rooms_PropertyVersion_PropertyVersionVersion",
                         column: x => x.PropertyVersionVersion,

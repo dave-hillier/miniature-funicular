@@ -21,7 +21,6 @@ namespace Properties.Model
         [Required]
         public Translations Name { get; set; }
 
-        [Required]
         public Translations Description { get; set; }
 
         [Required]
