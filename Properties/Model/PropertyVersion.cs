@@ -25,6 +25,7 @@ namespace Properties.Model
         public Translations Description { get; set; }
 
         [Required]
+        [MaxLength(64)]
         public string Category { get; set; } // TODO: does this need to be a lookup table?
 
         public List<ImageLink> Images { get; set; }
