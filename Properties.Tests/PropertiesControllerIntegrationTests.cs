@@ -51,7 +51,7 @@ namespace Properties.Tests
                     new ImageLink1 {Href = "https://rl-uk2.azureedge.net/picturemanager/images/OBMNG1/room3.jpg"},
                     new ImageLink1 {Href = "https://rl-uk2.azureedge.net/picturemanager/images/OBMNG1/room5.jpg"}
                 },
-                SubRooms = new List<RoomType> {subRoomType}
+                SubRooms = new List<RoomType> { subRoomType }
             };
             var otaAmenities = new List<OtaAmenity>
             {
@@ -69,7 +69,7 @@ namespace Properties.Tests
                 RoomTypeId = roomType.Id,
                 Name = CreateTranslations("Room Name"),
                 Description = CreateTranslations("Room Description")
-                
+
             };
 
             context.Rooms.Add(room);
@@ -88,8 +88,8 @@ namespace Properties.Tests
                     new ImageLink {Href = "https://rl-uk2.azureedge.net/picturemanager/images/OBMNG2/hotel1.jpg"},
                     new ImageLink {Href = "https://rl-uk2.azureedge.net/picturemanager/images/OBMNG1/Hotel1.JPG"}
                 },
-                Rooms = new List<Room> {room},
-                RoomTypes = new List<RoomType> {roomType},
+                Rooms = new List<Room> { room },
+                RoomTypes = new List<RoomType> { roomType },
                 ContactInfos = new List<ContactInfo>
                 {
                     new ContactInfo
@@ -168,11 +168,11 @@ namespace Properties.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             dynamic responseObject = JObject.Parse(responseBody);
-            
+
             Assert.Equal("/api/properties/current/Tenant", responseObject._links.self.href.ToString());
-            
+
         }
-        
+
         [Fact]
         public async void GetProperty()
         {
@@ -183,12 +183,12 @@ namespace Properties.Tests
             var propertyUrl = responseObject._embedded.properties[0]._links.self.href.ToString();
 
             var propertyResponse = await _testClient.GetAsync(propertyUrl);
-            
+
             Assert.Equal(HttpStatusCode.Redirect, propertyResponse.StatusCode);
-            
+
             Assert.Equal("/api/properties/versions/Tenant/PropertyVersion", propertyResponse.Headers.Location.ToString());
         }
-        
+
         [Fact]
         public async void GetPropertyDirect()
         {
@@ -199,17 +199,17 @@ namespace Properties.Tests
             var propertyUrl = responseObject._embedded.properties[0]._links.direct.href.ToString();
 
             var propertyResponse = await _testClient.GetAsync(propertyUrl);
-            
+
             Assert.Equal(HttpStatusCode.OK, propertyResponse.StatusCode);
-            
+
             var propertyResponseBody = await propertyResponse.Content.ReadAsStringAsync();
-            
+
             dynamic property = JObject.Parse(propertyResponseBody);
-            
+
             Assert.Equal("English: name", property.name.en.ToString());
         }
-        
-                
+
+
         [Fact]
         public async void CreateProperty()
         {
@@ -218,32 +218,33 @@ namespace Properties.Tests
                 Name = new
                 {
                     en = "Name"
-                }
+                },
+                Category = "Hotel"
             };
             var request = HttpClientHelper.CreateJsonRequest("/api/properties/", HttpMethod.Post, payload);
             var response = await _testClient.SendAsync(request);
             var newLocation = response.Headers.Location;
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            
+
             Assert.Matches("/api/properties/.*", newLocation.ToString());
             var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
-            
+
             Assert.Equal(HttpStatusCode.OK, propertyList.StatusCode);
-            
+
             var newProperty = await _testClient.GetAsync(newLocation);
             Assert.Equal(HttpStatusCode.Found, newProperty.StatusCode);
-            
+
             var newPropertyResponse = await _testClient.GetAsync(newProperty.Headers.Location);
-            
+
             Assert.Equal(HttpStatusCode.OK, newPropertyResponse.StatusCode);
             var newPropertyResponseBody = await newPropertyResponse.Content.ReadAsStringAsync();
-            
+
             dynamic responseObject = JObject.Parse(newPropertyResponseBody);
-            
+
             Assert.Equal("Name", responseObject.name.en.ToString());
         }
-        
+
         [Fact]
         public async void UpdateProperty()
         {
@@ -252,35 +253,36 @@ namespace Properties.Tests
                 Name = new
                 {
                     en = "New Name"
-                }
+                },
+                Category = "Hotel"
             };
             var request = HttpClientHelper.CreateJsonRequest("api/properties/current/Tenant/PropertyId", HttpMethod.Put, payload);
             var response = await _testClient.SendAsync(request);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
 
             var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
-            
+
             Assert.Equal(HttpStatusCode.OK, propertyList.StatusCode);
             var propertyListBody = await propertyList.Content.ReadAsStringAsync();
-            
+
             dynamic responseObject = JObject.Parse(propertyListBody);
 
             var link = responseObject._embedded.properties[0]._links.direct.href.ToString();
             Assert.NotEqual("/api/properties/versions/Tenant/PropertyVersion", link);
         }
-        
-        
+
+
         [Fact]
         public async void Delete()
         {
-            var request = HttpClientHelper.CreateJsonRequest("api/properties/current/Tenant/PropertyId", HttpMethod.Delete, new {});
+            var request = HttpClientHelper.CreateJsonRequest("api/properties/current/Tenant/PropertyId", HttpMethod.Delete, new { });
             var response = await _testClient.SendAsync(request);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            
+
 
             var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
-            
+
             Assert.Equal(HttpStatusCode.NotFound, propertyList.StatusCode);
         }
     }

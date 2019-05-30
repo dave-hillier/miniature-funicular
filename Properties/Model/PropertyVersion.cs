@@ -12,8 +12,8 @@ namespace Properties.Model
         [Key]
         public string Version { get; set; }
 
-        [Required]
         [MaxLength(64)]
+        // [Required] // Required on DB, but not the JSON - TODO: move to fluent API
         public string Tenant { get; set; }
 
         public DateTime Updated { get; set; }

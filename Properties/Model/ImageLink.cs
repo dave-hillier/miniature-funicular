@@ -7,6 +7,7 @@ namespace Properties.Model
     [Owned]
     public class ImageLink
     {
+        [Required]
         public int SortValue { get; set; }
 
         [Required]
