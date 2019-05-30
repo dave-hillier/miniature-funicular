@@ -10,7 +10,7 @@ using Properties.Model;
 namespace Properties.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190530205739_InitialCreate")]
+    [Migration("20190530211129_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,7 @@ namespace Properties.Migrations
 
                     b.Property<string>("Tenant")
                         .IsRequired()
-                        .HasMaxLength(100);
+                        .HasMaxLength(64);
 
                     b.HasKey("Id");
 
@@ -63,7 +63,8 @@ namespace Properties.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Category")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasMaxLength(64);
 
                     b.Property<int>("DescriptionId");
 
@@ -71,7 +72,7 @@ namespace Properties.Migrations
 
                     b.Property<string>("Tenant")
                         .IsRequired()
-                        .HasMaxLength(100);
+                        .HasMaxLength(64);
 
                     b.Property<DateTime>("Updated");
 
@@ -183,16 +184,19 @@ namespace Properties.Migrations
                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                             b1.Property<string>("Email")
-                                .IsRequired();
+                                .IsRequired()
+                                .HasMaxLength(100);
 
                             b1.Property<string>("Name")
-                                .IsRequired();
+                                .IsRequired()
+                                .HasMaxLength(100);
 
                             b1.Property<string>("PropertyVersionId")
                                 .IsRequired();
 
                             b1.Property<string>("Type")
-                                .IsRequired();
+                                .IsRequired()
+                                .HasMaxLength(20);
 
                             b1.HasKey("Id");
 
@@ -212,13 +216,16 @@ namespace Properties.Migrations
                                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                                     b2.Property<string>("CityName")
-                                        .IsRequired();
+                                        .IsRequired()
+                                        .HasMaxLength(100);
 
                                     b2.Property<string>("CountryName")
-                                        .IsRequired();
+                                        .IsRequired()
+                                        .HasMaxLength(100);
 
                                     b2.Property<string>("PostalCode")
-                                        .IsRequired();
+                                        .IsRequired()
+                                        .HasMaxLength(50);
 
                                     b2.HasKey("ContactInfoId");
 
@@ -238,7 +245,8 @@ namespace Properties.Migrations
                                             b3.Property<int>("AddressId");
 
                                             b3.Property<string>("Content")
-                                                .IsRequired();
+                                                .IsRequired()
+                                                .HasMaxLength(100);
 
                                             b3.Property<int>("LineNo");
 
@@ -264,12 +272,14 @@ namespace Properties.Migrations
                                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                                     b2.Property<string>("Number")
-                                        .IsRequired();
+                                        .IsRequired()
+                                        .HasMaxLength(100);
 
                                     b2.Property<int>("PhoneInfoId");
 
                                     b2.Property<string>("Type")
-                                        .IsRequired();
+                                        .IsRequired()
+                                        .HasMaxLength(20);
 
                                     b2.HasKey("Id");
 

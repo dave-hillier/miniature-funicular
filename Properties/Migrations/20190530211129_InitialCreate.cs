@@ -44,11 +44,11 @@ namespace Properties.Migrations
                 columns: table => new
                 {
                     Version = table.Column<string>(nullable: false),
-                    Tenant = table.Column<string>(maxLength: 100, nullable: false),
+                    Tenant = table.Column<string>(maxLength: 64, nullable: false),
                     Updated = table.Column<DateTime>(nullable: false),
                     NameId = table.Column<int>(nullable: false),
                     DescriptionId = table.Column<int>(nullable: false),
-                    Category = table.Column<string>(nullable: false)
+                    Category = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,12 +73,12 @@ namespace Properties.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Type = table.Column<string>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Email = table.Column<string>(nullable: false),
-                    Address_CityName = table.Column<string>(nullable: false),
-                    Address_PostalCode = table.Column<string>(nullable: false),
-                    Address_CountryName = table.Column<string>(nullable: false),
+                    Type = table.Column<string>(maxLength: 20, nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Email = table.Column<string>(maxLength: 100, nullable: false),
+                    Address_CityName = table.Column<string>(maxLength: 100, nullable: false),
+                    Address_PostalCode = table.Column<string>(maxLength: 50, nullable: false),
+                    Address_CountryName = table.Column<string>(maxLength: 100, nullable: false),
                     PropertyVersionId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -119,7 +119,7 @@ namespace Properties.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     CurrentVersion = table.Column<string>(nullable: false),
-                    Tenant = table.Column<string>(maxLength: 100, nullable: false)
+                    Tenant = table.Column<string>(maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -179,7 +179,7 @@ namespace Properties.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ParentId = table.Column<int>(nullable: false),
                     LineNo = table.Column<int>(nullable: false),
-                    Content = table.Column<string>(nullable: false),
+                    Content = table.Column<string>(maxLength: 100, nullable: false),
                     AddressId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -199,8 +199,8 @@ namespace Properties.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Type = table.Column<string>(nullable: false),
-                    Number = table.Column<string>(nullable: false),
+                    Type = table.Column<string>(maxLength: 20, nullable: false),
+                    Number = table.Column<string>(maxLength: 100, nullable: false),
                     PhoneInfoId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
