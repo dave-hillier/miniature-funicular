@@ -10,17 +10,19 @@ namespace Tasks.Model
     {
         [JsonIgnore]
         public string Id { get; set; }
-        
+
         [MaxLength(255)]
+        [Required]
         public string Title { get; set; }
-                
+
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime LastUpdated { get; set; }
-        
+
         [JsonIgnore]
         [MaxLength(64)]
+        [Required]
         public string Tenant { get; set; }
-        
+
         [JsonIgnore]
         public List<TaskModel> Tasks { get; set; }
     }

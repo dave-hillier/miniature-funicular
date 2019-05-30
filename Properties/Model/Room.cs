@@ -18,6 +18,7 @@ namespace Properties.Model
         public Translations Description { get; set; }
         
         [JsonIgnore]
+        [Required]
         public string RoomTypeId { get; set; }
         
         [ForeignKey("RoomTypeId")]

@@ -28,6 +28,7 @@ namespace Issues.Model
         public DateTime? Resolved { get; set; }
 
         [MaxLength(2000)]
+        [Required]
         public string Location { get; set; } // URL to ...?
 
         [Required]

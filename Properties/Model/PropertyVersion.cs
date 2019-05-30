@@ -18,8 +18,10 @@ namespace Properties.Model
 
         public DateTime Updated { get; set; }
 
+        [Required]
         public Translations Name { get; set; }
 
+        [Required]
         public Translations Description { get; set; }
 
         [Required]

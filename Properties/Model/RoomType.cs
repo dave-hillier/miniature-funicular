@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Properties.Converters;
 
@@ -9,8 +10,10 @@ namespace Properties.Model
     {
         public string Id { get; set; }
         
+        [Required]
         public Translations Name { get; set; }
         
+        [Required]
         public Translations Description { get; set; }
         
         public List<OtaAmenity> Amenities { get; set; }
