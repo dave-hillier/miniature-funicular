@@ -13,7 +13,7 @@ namespace Properties.Model
 
         [JsonIgnore]
         [Required]
-        [MaxLength(100)]
+        [MaxLength(64)]
         public string Tenant { get; set; }
     }
 }

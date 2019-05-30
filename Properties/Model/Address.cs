@@ -11,14 +11,17 @@ namespace Properties.Model
     public class Address
     {
         public List<AddressLine> Lines { get; set; }
-        
+
         [Required]
+        [MaxLength(100)]
         public string CityName { get; set; }
 
         [Required]
+        [MaxLength(50)]
         public string PostalCode { get; set; }
-        
+
         [Required]
+        [MaxLength(100)]
         public string CountryName { get; set; }
     }
 }

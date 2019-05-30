@@ -8,13 +8,14 @@ namespace Properties.Model
     public class AddressLine
     {
         [JsonIgnore]
-        public int ParentId { get; set; } 
-        
+        public int ParentId { get; set; }
+
         [JsonIgnore]
         [Required]
         public int LineNo { get; set; }
-        
+
         [Required]
+        [MaxLength(100)]
         public string Content { get; set; }
     }
 }

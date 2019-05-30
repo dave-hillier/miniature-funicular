@@ -13,7 +13,7 @@ namespace Properties.Model
         public string Version { get; set; }
 
         [Required]
-        [MaxLength(100)]
+        [MaxLength(64)]
         public string Tenant { get; set; }
 
         public DateTime Updated { get; set; }
