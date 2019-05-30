@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Properties.Converters;
@@ -16,9 +17,11 @@ namespace Properties.Model
         [Owned]
         public class Pair
         {
+            [Required]
             public string LanguageTag { get; set; }
-        
-            public string Value { get; set; } 
+
+            [Required]
+            public string Value { get; set; }
         }
 
     }

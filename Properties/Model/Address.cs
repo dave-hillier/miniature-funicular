@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Properties.Converters;
@@ -11,10 +12,13 @@ namespace Properties.Model
     {
         public List<AddressLine> Lines { get; set; }
         
+        [Required]
         public string CityName { get; set; }
 
+        [Required]
         public string PostalCode { get; set; }
         
+        [Required]
         public string CountryName { get; set; }
     }
 }

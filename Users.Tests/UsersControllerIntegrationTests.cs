@@ -31,29 +31,31 @@ namespace Users.Tests
 
         private void Seed(ApplicationDbContext context)
         {
-            var group = new Group {DisplayName = "Admin", Id = "G", Tenant = "Tenant"};
+            var group = new Group { Name = "Admin", Id = "G", Tenant = "Tenant" };
             context.Groups.Add(group);
-            
+
             var user = new User
             {
-                Username = "Username", Id = Id1, Tenant = "Tenant",
+                Username = "Username",
+                Id = Id1,
+                Tenant = "Tenant",
             };
             var userGroup = new UserGroup
             {
                 GroupId = group.Id,
-                Group = group, 
+                Group = group,
                 UserId = user.Id,
-                User = user                    
+                User = user
             };
             user.UserGroups = new List<UserGroup> { userGroup };
             context.Users.Add(user);
-            
+
             context.Users.Add(new User { Username = "User2", Id = Id2, Tenant = "Tenant" });
-            
+
             context.Users.Add(new User { Username = "User1", Tenant = "OtherTenant" });
 
             context.UserGroups.Add(userGroup);
-            
+
             context.SaveChanges();
         }
 
@@ -110,7 +112,7 @@ namespace Users.Tests
 
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
             Assert.Equal("/api/users/1", response.Headers.Location.ToString());
-            
+
         }
     }
 }
