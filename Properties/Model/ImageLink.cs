@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Properties.Model
 {
-
     [Owned]
     public class ImageLink
     {
@@ -25,5 +24,4 @@ namespace Properties.Model
         [MaxLength(2000)]
         public string Href { get; set; }
     }
-
 }

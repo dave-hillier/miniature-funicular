@@ -22,7 +22,7 @@ namespace Properties.Controllers
             _applicationDbContext = applicationDbContext;
             _tenantAccessor = tenantAccessor;
         }
-        
+
         [HttpPost]
         [Authorize("create:property")]
         [Consumes("application/json")]
@@ -38,10 +38,10 @@ namespace Properties.Controllers
             };
             _applicationDbContext.Properties.Add(property);
             _applicationDbContext.PropertyVersion.Add(body);
-            
+
             await _applicationDbContext.SaveChangesAsync();
 
-            return Created($"/api/properties/current/{tenant}/{property.Id}", new {});
+            return Created($"/api/properties/current/{tenant}/{property.Id}", new { });
         }
 
         [HttpPut("current/{tenant}/{id}")]
@@ -51,19 +51,19 @@ namespace Properties.Controllers
         {
             if (tenant != _tenantAccessor.Current)
                 return Unauthorized();
-            
+
             var property = await GetPropertyAsync(tenant, id);
 
             if (property == null)
                 return NotFound();
-            
+
             body.Tenant = tenant;
             property.Current = body;
 
             _applicationDbContext.PropertyVersion.Add(body);
             await _applicationDbContext.SaveChangesAsync();
 
-            return Ok(); 
+            return Ok();
         }
 
         [HttpDelete("current/{tenant}/{id}")]
@@ -73,18 +73,18 @@ namespace Properties.Controllers
         {
             if (tenant != _tenantAccessor.Current)
                 return Unauthorized();
-            
+
             var property = await GetPropertyAsync(tenant, id);
 
             if (property == null)
                 return NotFound();
 
             _applicationDbContext.Properties.Remove(property); // Note: soft delete not required as we keep the version 
-            
+
             await _applicationDbContext.SaveChangesAsync();
-            return Ok(); 
+            return Ok();
         }
-        
+
         // Lookup the hotels for a given tenant
         [HttpGet("current/{tenant}")]
         [Produces("application/hal+json")]
@@ -95,10 +95,10 @@ namespace Properties.Controllers
             if (!properties.Any())
                 return NotFound();
 
-            var props = properties .Select(p => 
-                    new Resource($"/api/properties/current/{tenant}/{p.Id}")
-                        .AddLink("direct", $"/api/properties/versions/{tenant}/{p.Current.Version}")).ToArray();
-            
+            var props = properties.Select(p =>
+                   new Resource($"/api/properties/current/{tenant}/{p.Id}")
+                       .AddLink("direct", $"/api/properties/versions/{tenant}/{p.Current.Version}")).ToArray();
+
             var resource = new Resource($"/api/properties/current/{tenant}")
                 .AddEmbedded("properties", props);
 
@@ -124,13 +124,13 @@ namespace Properties.Controllers
         {
             var property = await GetQueryablePropertyVersion(tenant, version)
                 .SingleOrDefaultAsync();
-            
+
             if (property == null)
                 return NotFound();
 
             return Ok(property.ToResource());
         }
-        
+
         private IQueryable<PropertyVersion> GetQueryablePropertyVersion(string tenant, string version)
         {
             return _applicationDbContext.PropertyVersion
@@ -144,7 +144,7 @@ namespace Properties.Controllers
                     .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.Amenities)
                     .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.SubRooms).ThenInclude(rt => rt.SubRooms);
         }
-        
+
         private Task<Property> GetPropertyAsync(string tenant, string id)
         {
             return GetPropertyByTenant(tenant)

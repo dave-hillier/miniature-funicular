@@ -174,6 +174,14 @@ namespace Properties.Tests
         }
 
         [Fact]
+        public async void GetInvalidTenant()
+        {
+            var response = await _testClient.GetAsync("api/properties/current/Invalid");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
         public async void GetProperty()
         {
             var propertyList = await _testClient.GetAsync("api/properties/current/Tenant");
