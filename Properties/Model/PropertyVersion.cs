@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Properties.Converters;
 
@@ -10,9 +11,11 @@ namespace Properties.Model
     public class PropertyVersion
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Version { get; set; }
 
         [MaxLength(64)]
+
         // [Required] // Required on DB, but not the JSON - TODO: move to fluent API
         public string Tenant { get; set; }
 

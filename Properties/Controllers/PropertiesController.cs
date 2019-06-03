@@ -47,7 +47,7 @@ namespace Properties.Controllers
         [HttpPut("current/{tenant}/{id}")]
         [Authorize("update:property")]
         [Consumes("application/json")]
-        public async Task<ActionResult> ReplaceProperty(string tenant, string id, [FromBody]PropertyVersion body)
+        public async Task<ActionResult> ReplaceProperty(string tenant, int id, [FromBody]PropertyVersion body)
         {
             if (tenant != _tenantAccessor.Current)
                 return Unauthorized();
@@ -69,7 +69,7 @@ namespace Properties.Controllers
         [HttpDelete("current/{tenant}/{id}")]
         [Authorize("update:property")]
         [Consumes("application/json")]
-        public async Task<ActionResult> DeleteProperty(string tenant, string id)
+        public async Task<ActionResult> DeleteProperty(string tenant, int id)
         {
             if (tenant != _tenantAccessor.Current)
                 return Unauthorized();
@@ -107,7 +107,7 @@ namespace Properties.Controllers
 
         [HttpGet("current/{tenant}/{id}")]
         [Produces("application/hal+json")]
-        public async Task<ActionResult<Resource>> GetLatestVersionProperties(string tenant, string id)
+        public async Task<ActionResult<Resource>> GetLatestVersionProperties(string tenant, int id)
         {
             var property = await GetPropertyAsync(tenant, id);
 
@@ -145,7 +145,7 @@ namespace Properties.Controllers
                     .Include(pv => pv.RoomTypes).ThenInclude(rt => rt.SubRooms).ThenInclude(rt => rt.SubRooms);
         }
 
-        private Task<Property> GetPropertyAsync(string tenant, string id)
+        private Task<Property> GetPropertyAsync(string tenant, int id)
         {
             return GetPropertyByTenant(tenant)
                 .Where(p => p.Id == id)

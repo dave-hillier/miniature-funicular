@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Properties.Model;
 
-namespace Properties.Migrations
+namespace PropertiesX.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -15,7 +15,7 @@ namespace Properties.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "3.0.0-preview5.19227.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -25,7 +25,7 @@ namespace Properties.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ParentId");
+                    b.Property<int?>("ParentId");
 
                     b.Property<int?>("Value");
 
@@ -38,8 +38,9 @@ namespace Properties.Migrations
 
             modelBuilder.Entity("Properties.Model.Property", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CurrentVersion")
                         .IsRequired();
@@ -57,8 +58,7 @@ namespace Properties.Migrations
 
             modelBuilder.Entity("Properties.Model.PropertyVersion", b =>
                 {
-                    b.Property<string>("Version")
-                        .ValueGeneratedOnAdd();
+                    b.Property<string>("Version");
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -69,7 +69,6 @@ namespace Properties.Migrations
                     b.Property<int>("NameId");
 
                     b.Property<string>("Tenant")
-                        .IsRequired()
                         .HasMaxLength(64);
 
                     b.Property<DateTime>("Updated");
@@ -95,8 +94,7 @@ namespace Properties.Migrations
 
                     b.Property<string>("PropertyVersionVersion");
 
-                    b.Property<string>("RoomTypeId")
-                        .IsRequired();
+                    b.Property<int>("RoomTypeId");
 
                     b.HasKey("Id");
 
@@ -113,8 +111,9 @@ namespace Properties.Migrations
 
             modelBuilder.Entity("Properties.Model.RoomType", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int?>("DescriptionId");
 
@@ -122,7 +121,7 @@ namespace Properties.Migrations
 
                     b.Property<string>("PropertyVersionVersion");
 
-                    b.Property<string>("RoomTypeId");
+                    b.Property<int?>("RoomTypeId");
 
                     b.HasKey("Id");
 
@@ -160,7 +159,8 @@ namespace Properties.Migrations
                     b.HasOne("Properties.Model.PropertyVersion", "Current")
                         .WithMany()
                         .HasForeignKey("CurrentVersion")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Properties.Model.PropertyVersion", b =>
@@ -172,10 +172,13 @@ namespace Properties.Migrations
                     b.HasOne("Properties.Model.Translations", "Name")
                         .WithMany()
                         .HasForeignKey("NameId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsMany("Properties.Model.ContactInfo", "ContactInfos", b1 =>
                         {
+                            b1.Property<string>("PropertyVersionVersion");
+
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -188,26 +191,21 @@ namespace Properties.Migrations
                                 .IsRequired()
                                 .HasMaxLength(100);
 
-                            b1.Property<string>("PropertyVersionId")
-                                .IsRequired();
-
                             b1.Property<string>("Type")
                                 .IsRequired()
                                 .HasMaxLength(20);
 
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("PropertyVersionId");
+                            b1.HasKey("PropertyVersionVersion", "Id");
 
                             b1.ToTable("ContactInfo");
 
-                            b1.HasOne("Properties.Model.PropertyVersion")
-                                .WithMany("ContactInfos")
-                                .HasForeignKey("PropertyVersionId")
-                                .OnDelete(DeleteBehavior.Cascade);
+                            b1.WithOwner()
+                                .HasForeignKey("PropertyVersionVersion");
 
                             b1.OwnsOne("Properties.Model.Address", "Address", b2 =>
                                 {
+                                    b2.Property<string>("ContactInfoPropertyVersionVersion");
+
                                     b2.Property<int>("ContactInfoId")
                                         .ValueGeneratedOnAdd()
                                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -224,22 +222,22 @@ namespace Properties.Migrations
                                         .IsRequired()
                                         .HasMaxLength(50);
 
-                                    b2.HasKey("ContactInfoId");
+                                    b2.HasKey("ContactInfoPropertyVersionVersion", "ContactInfoId");
 
                                     b2.ToTable("ContactInfo");
 
-                                    b2.HasOne("Properties.Model.ContactInfo")
-                                        .WithOne("Address")
-                                        .HasForeignKey("Properties.Model.Address", "ContactInfoId")
-                                        .OnDelete(DeleteBehavior.Cascade);
+                                    b2.WithOwner()
+                                        .HasForeignKey("ContactInfoPropertyVersionVersion", "ContactInfoId");
 
                                     b2.OwnsMany("Properties.Model.AddressLine", "Lines", b3 =>
                                         {
+                                            b3.Property<string>("AddressContactInfoPropertyVersionVersion");
+
+                                            b3.Property<int>("AddressContactInfoId");
+
                                             b3.Property<int>("Id")
                                                 .ValueGeneratedOnAdd()
                                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                                            b3.Property<int>("AddressId");
 
                                             b3.Property<string>("Content")
                                                 .IsRequired()
@@ -249,21 +247,21 @@ namespace Properties.Migrations
 
                                             b3.Property<int>("ParentId");
 
-                                            b3.HasKey("Id");
-
-                                            b3.HasIndex("AddressId");
+                                            b3.HasKey("AddressContactInfoPropertyVersionVersion", "AddressContactInfoId", "Id");
 
                                             b3.ToTable("AddressLine");
 
-                                            b3.HasOne("Properties.Model.Address")
-                                                .WithMany("Lines")
-                                                .HasForeignKey("AddressId")
-                                                .OnDelete(DeleteBehavior.Cascade);
+                                            b3.WithOwner()
+                                                .HasForeignKey("AddressContactInfoPropertyVersionVersion", "AddressContactInfoId");
                                         });
                                 });
 
                             b1.OwnsMany("Properties.Model.PhoneInfo", "PhoneInfos", b2 =>
                                 {
+                                    b2.Property<string>("ContactInfoPropertyVersionVersion");
+
+                                    b2.Property<int>("ContactInfoId");
+
                                     b2.Property<int>("Id")
                                         .ValueGeneratedOnAdd()
                                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -272,27 +270,23 @@ namespace Properties.Migrations
                                         .IsRequired()
                                         .HasMaxLength(100);
 
-                                    b2.Property<int>("PhoneInfoId");
-
                                     b2.Property<string>("Type")
                                         .IsRequired()
                                         .HasMaxLength(20);
 
-                                    b2.HasKey("Id");
-
-                                    b2.HasIndex("PhoneInfoId");
+                                    b2.HasKey("ContactInfoPropertyVersionVersion", "ContactInfoId", "Id");
 
                                     b2.ToTable("PhoneInfo");
 
-                                    b2.HasOne("Properties.Model.ContactInfo")
-                                        .WithMany("PhoneInfos")
-                                        .HasForeignKey("PhoneInfoId")
-                                        .OnDelete(DeleteBehavior.Cascade);
+                                    b2.WithOwner()
+                                        .HasForeignKey("ContactInfoPropertyVersionVersion", "ContactInfoId");
                                 });
                         });
 
                     b.OwnsMany("Properties.Model.ImageLink", "Images", b1 =>
                         {
+                            b1.Property<string>("PropertyVersionVersion");
+
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -301,21 +295,14 @@ namespace Properties.Migrations
                                 .IsRequired()
                                 .HasMaxLength(2000);
 
-                            b1.Property<string>("PropertyVersionId")
-                                .IsRequired();
-
                             b1.Property<int>("SortValue");
 
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("PropertyVersionId");
+                            b1.HasKey("PropertyVersionVersion", "Id");
 
                             b1.ToTable("ImageLink");
 
-                            b1.HasOne("Properties.Model.PropertyVersion")
-                                .WithMany("Images")
-                                .HasForeignKey("PropertyVersionId")
-                                .OnDelete(DeleteBehavior.Cascade);
+                            b1.WithOwner()
+                                .HasForeignKey("PropertyVersionVersion");
                         });
                 });
 
@@ -329,14 +316,15 @@ namespace Properties.Migrations
                         .WithMany()
                         .HasForeignKey("NameId");
 
-                    b.HasOne("Properties.Model.PropertyVersion")
+                    b.HasOne("Properties.Model.PropertyVersion", null)
                         .WithMany("Rooms")
                         .HasForeignKey("PropertyVersionVersion");
 
                     b.HasOne("Properties.Model.RoomType", "RoomType")
                         .WithMany()
                         .HasForeignKey("RoomTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Properties.Model.RoomType", b =>
@@ -348,18 +336,21 @@ namespace Properties.Migrations
                     b.HasOne("Properties.Model.Translations", "Name")
                         .WithMany()
                         .HasForeignKey("NameId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Properties.Model.PropertyVersion")
+                    b.HasOne("Properties.Model.PropertyVersion", null)
                         .WithMany("RoomTypes")
                         .HasForeignKey("PropertyVersionVersion");
 
-                    b.HasOne("Properties.Model.RoomType")
+                    b.HasOne("Properties.Model.RoomType", null)
                         .WithMany("SubRooms")
                         .HasForeignKey("RoomTypeId");
 
                     b.OwnsMany("Properties.Model.ImageLink1", "Images", b1 =>
                         {
+                            b1.Property<int>("RoomTypeId");
+
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -368,41 +359,33 @@ namespace Properties.Migrations
                                 .IsRequired()
                                 .HasMaxLength(2000);
 
-                            b1.Property<string>("RoomTypeId")
-                                .IsRequired();
-
                             b1.Property<int>("SortValue");
 
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("RoomTypeId");
+                            b1.HasKey("RoomTypeId", "Id");
 
                             b1.ToTable("ImageLink1");
 
-                            b1.HasOne("Properties.Model.RoomType")
-                                .WithMany("Images")
-                                .HasForeignKey("RoomTypeId")
-                                .OnDelete(DeleteBehavior.Cascade);
+                            b1.WithOwner()
+                                .HasForeignKey("RoomTypeId");
                         });
 
                     b.OwnsMany("Properties.Model.RoomTag", "Tags", b1 =>
                         {
-                            b1.Property<string>("Tag")
-                                .ValueGeneratedOnAdd();
+                            b1.Property<int>("RoomTypeId");
 
-                            b1.Property<string>("RoomTypeId")
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("Tag")
                                 .IsRequired();
 
-                            b1.HasKey("Tag");
-
-                            b1.HasIndex("RoomTypeId");
+                            b1.HasKey("RoomTypeId", "Id");
 
                             b1.ToTable("RoomTag");
 
-                            b1.HasOne("Properties.Model.RoomType")
-                                .WithMany("Tags")
-                                .HasForeignKey("RoomTypeId")
-                                .OnDelete(DeleteBehavior.Cascade);
+                            b1.WithOwner()
+                                .HasForeignKey("RoomTypeId");
                         });
                 });
 
@@ -410,23 +393,24 @@ namespace Properties.Migrations
                 {
                     b.OwnsMany("Properties.Model.Translations+Pair", "Values", b1 =>
                         {
-                            b1.Property<string>("LanguageTag");
-
                             b1.Property<int>("TranslationsId");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("LanguageTag")
+                                .IsRequired();
 
                             b1.Property<string>("Value")
                                 .IsRequired();
 
-                            b1.HasKey("LanguageTag", "TranslationsId");
-
-                            b1.HasIndex("TranslationsId");
+                            b1.HasKey("TranslationsId", "Id");
 
                             b1.ToTable("Pair");
 
-                            b1.HasOne("Properties.Model.Translations")
-                                .WithMany("Values")
-                                .HasForeignKey("TranslationsId")
-                                .OnDelete(DeleteBehavior.Cascade);
+                            b1.WithOwner()
+                                .HasForeignKey("TranslationsId");
                         });
                 });
 #pragma warning restore 612, 618

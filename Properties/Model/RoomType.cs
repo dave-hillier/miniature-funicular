@@ -8,7 +8,7 @@ namespace Properties.Model
     [JsonConverter(typeof(RoomTypeJsonConverter))]
     public class RoomType
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public Translations Name { get; set; }
