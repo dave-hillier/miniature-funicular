@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace Properties.Model
@@ -6,7 +7,8 @@ namespace Properties.Model
     public class Property
     {
         [JsonIgnore]
-        public int Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string Id { get; set; }
 
         [Required]
         public PropertyVersion Current { get; set; }

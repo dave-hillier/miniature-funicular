@@ -119,8 +119,7 @@ namespace PropertiesX.Migrations
                 name: "Properties",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(nullable: false),
                     CurrentVersion = table.Column<string>(nullable: false),
                     Tenant = table.Column<string>(maxLength: 64, nullable: false)
                 },
@@ -139,12 +138,11 @@ namespace PropertiesX.Migrations
                 name: "RoomTypes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(nullable: false),
                     NameId = table.Column<int>(nullable: false),
                     DescriptionId = table.Column<int>(nullable: true),
                     PropertyVersionVersion = table.Column<string>(nullable: true),
-                    RoomTypeId = table.Column<int>(nullable: true)
+                    RoomTypeId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -224,7 +222,7 @@ namespace PropertiesX.Migrations
                 name: "ImageLink1",
                 columns: table => new
                 {
-                    RoomTypeId = table.Column<int>(nullable: false),
+                    RoomTypeId = table.Column<string>(nullable: false),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     SortValue = table.Column<int>(nullable: false),
@@ -247,7 +245,7 @@ namespace PropertiesX.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ParentId = table.Column<int>(nullable: true),
+                    ParentId = table.Column<string>(nullable: true),
                     Value = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -269,7 +267,7 @@ namespace PropertiesX.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     NameId = table.Column<int>(nullable: true),
                     DescriptionId = table.Column<int>(nullable: true),
-                    RoomTypeId = table.Column<int>(nullable: false),
+                    RoomTypeId = table.Column<string>(nullable: false),
                     PropertyVersionVersion = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -305,7 +303,7 @@ namespace PropertiesX.Migrations
                 name: "RoomTag",
                 columns: table => new
                 {
-                    RoomTypeId = table.Column<int>(nullable: false),
+                    RoomTypeId = table.Column<string>(nullable: false),
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Tag = table.Column<string>(nullable: false)

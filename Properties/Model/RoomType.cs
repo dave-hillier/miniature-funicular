@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Properties.Converters;
 
@@ -8,7 +9,9 @@ namespace Properties.Model
     [JsonConverter(typeof(RoomTypeJsonConverter))]
     public class RoomType
     {
-        public int Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string Id { get; set; }
 
         [Required]
         public Translations Name { get; set; }

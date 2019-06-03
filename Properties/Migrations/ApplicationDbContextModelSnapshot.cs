@@ -25,7 +25,7 @@ namespace PropertiesX.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ParentId");
+                    b.Property<string>("ParentId");
 
                     b.Property<int?>("Value");
 
@@ -38,9 +38,8 @@ namespace PropertiesX.Migrations
 
             modelBuilder.Entity("Properties.Model.Property", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("CurrentVersion")
                         .IsRequired();
@@ -58,7 +57,8 @@ namespace PropertiesX.Migrations
 
             modelBuilder.Entity("Properties.Model.PropertyVersion", b =>
                 {
-                    b.Property<string>("Version");
+                    b.Property<string>("Version")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -94,7 +94,8 @@ namespace PropertiesX.Migrations
 
                     b.Property<string>("PropertyVersionVersion");
 
-                    b.Property<int>("RoomTypeId");
+                    b.Property<string>("RoomTypeId")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -111,9 +112,8 @@ namespace PropertiesX.Migrations
 
             modelBuilder.Entity("Properties.Model.RoomType", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int?>("DescriptionId");
 
@@ -121,7 +121,7 @@ namespace PropertiesX.Migrations
 
                     b.Property<string>("PropertyVersionVersion");
 
-                    b.Property<int?>("RoomTypeId");
+                    b.Property<string>("RoomTypeId");
 
                     b.HasKey("Id");
 
@@ -349,7 +349,7 @@ namespace PropertiesX.Migrations
 
                     b.OwnsMany("Properties.Model.ImageLink1", "Images", b1 =>
                         {
-                            b1.Property<int>("RoomTypeId");
+                            b1.Property<string>("RoomTypeId");
 
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -371,7 +371,7 @@ namespace PropertiesX.Migrations
 
                     b.OwnsMany("Properties.Model.RoomTag", "Tags", b1 =>
                         {
-                            b1.Property<int>("RoomTypeId");
+                            b1.Property<string>("RoomTypeId");
 
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()

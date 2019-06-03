@@ -20,7 +20,7 @@ namespace Properties.Model
 
         [JsonIgnore]
         [Required]
-        public int RoomTypeId { get; set; }
+        public string RoomTypeId { get; set; }
 
         [ForeignKey("RoomTypeId")]
         [JsonIgnore]
