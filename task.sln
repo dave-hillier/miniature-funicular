@@ -21,9 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScopeClaim", "ScopeClaim\Sc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HalHelper.Tests", "HalHelper.Tests\HalHelper.Tests.csproj", "{AF27AE38-8C03-4474-A6EC-7AE03ED16436}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Properties", "Properties\Properties.csproj", "{DDC6016F-6392-4F03-A911-DE9239B05C39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelProperties", "HotelProperties\HotelProperties.csproj", "{DDC6016F-6392-4F03-A911-DE9239B05C39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Properties.Tests", "Properties.Tests\Properties.Tests.csproj", "{FE5A6429-3071-4635-A9D3-E0E9E64BB5CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelProperties.Tests", "HotelProperties.Tests\HotelProperties.Tests.csproj", "{FE5A6429-3071-4635-A9D3-E0E9E64BB5CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

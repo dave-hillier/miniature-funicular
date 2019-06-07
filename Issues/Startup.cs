@@ -25,12 +25,11 @@ namespace Issues
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddJsonOptions(options =>
-              {
-                  options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                  options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-              })
-              .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            });
 
             services
                 .AddHealthChecks()
@@ -56,12 +55,12 @@ namespace Issues
 
             services.AddAuthorization(options =>
             {
-                options.AddScopePolicies( "read:issues", "write:issues");                
+                options.AddScopePolicies("read:issues", "write:issues");
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("Default")));
-            
+
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
             services.TryAddScoped<ITenantAccessor, TenantAccessor>();
             services.TryAddSingleton<IFileStorage, BlobFileStorage>();
@@ -86,5 +85,5 @@ namespace Issues
             app.UseMvc();
         }
     }
-   
+
 }

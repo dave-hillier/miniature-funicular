@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Properties\PropertiesX.csproj" />
+    <ProjectReference Include="..\HotelProperties\HotelProperties.csproj" />
     <ProjectReference Include="..\HalHelper\HalHelper.csproj" />
   </ItemGroup>
 

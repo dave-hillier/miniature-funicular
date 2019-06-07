@@ -33,9 +33,7 @@ namespace Properties
             {
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-            })
-
-              .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            });
             services.AddHealthChecks(); // TODO: DBContext health check
             services.AddHttpContextAccessor();
 
