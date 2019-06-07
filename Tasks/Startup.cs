@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ScopeClaim;
 using Tasks.Model;
+using Microsoft.Extensions.Hosting;
 
 namespace Tasks
 {
@@ -25,12 +26,11 @@ namespace Tasks
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().AddJsonOptions(options =>
-              {
-                  options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-                  options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-              })
-              .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+            });
 
             services.AddHealthChecks();
             services.AddHttpContextAccessor();
@@ -63,8 +63,14 @@ namespace Tasks
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHealthChecks("/status/health");
+            app.UseCors(builder => builder
+                            .WithOrigins("https://localhost:5011")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -74,11 +80,18 @@ namespace Tasks
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseHealthChecks("/status/health");
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
 
             app.UseAuthentication();
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
